@@ -1,11 +1,61 @@
 {
-  "name": "kerning",
+  "name": "typespacing",
   "version": "0.1.0",
-  "private": true,
+  "description": "Browser typography spacing toolkit with visual kerning editing. Framework-agnostic.",
+  "private": false,
   "type": "module",
-  "main": "./index.ts",
-  "types": "./index.ts",
-  "peerDependencies": {
-    "vue": "^3.0.0"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "vitest run tests/smoke/core.smoke.test.ts && playwright test tests/e2e/demo.spec.ts",
+    "smoke:ci": "vitest run tests/smoke/core.smoke.test.ts --reporter=dot && playwright test tests/e2e/demo.spec.ts --workers=1 --reporter=line",
+    "e2e": "playwright test",
+    "demo": "vite --config vite.demo.config.ts --host --port 4173",
+    "demo:build": "vite build --config vite.demo.config.ts",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "llms.txt"
+  ],
+  "keywords": [
+    "kerning",
+    "typography",
+    "letter-spacing",
+    "design-tool",
+    "font",
+    "typesetting",
+    "spacing"
+  ],
+  "sideEffects": false,
+  "license": "MIT",
+  "author": "cyocun",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyocun/typespacing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cyocun/typespacing/issues"
+  },
+  "homepage": "https://github.com/cyocun/typespacing#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.53.0",
+    "jsdom": "^26.1.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2",
+    "vite": "^7.1.5",
+    "vitest": "^3.2.4"
   }
 }

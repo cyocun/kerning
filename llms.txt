@@ -1,0 +1,121 @@
+# typespacing
+
+> Adjust per-character kerning in the browser, export as JSON, apply in production.
+
+## Install
+
+```bash
+npm install typespacing
+```
+
+## API
+
+One function: `createKerningEditor(options?)`
+
+```ts
+import { createKerningEditor } from 'typespacing'
+```
+
+### Options
+
+```ts
+interface KerningEditorOptions {
+  editable?: boolean      // true = editing UI, false = apply only (default: true)
+  kerning?: KerningExport // kerning data to apply on mount
+  locale?: 'en' | 'ja'   // UI language (default: 'en')
+}
+```
+
+### Edit (development / staging)
+
+```ts
+const editor = createKerningEditor({ editable: true })
+editor.mount()
+```
+
+Pass `kerning` to resume editing from a previous export:
+
+```ts
+const editor = createKerningEditor({ editable: true, kerning: previousData })
+editor.mount()
+```
+
+### Apply (production)
+
+```ts
+import kerningData from './kerning-export.json'
+
+const editor = createKerningEditor({ editable: false, kerning: kerningData })
+editor.mount()
+```
+
+### Events
+
+```ts
+editor.on('enable', () => { /* editing mode activated */ })
+editor.on('disable', () => { /* editing mode deactivated */ })
+editor.on('change', ({ selector, kerning, indent }) => { /* value changed */ })
+editor.on('select', ({ selector, gapIndex, gapIndexEnd }) => { /* selection changed */ })
+editor.on('reset', () => { /* all kerning cleared */ })
+```
+
+`on()` returns a dispose function:
+
+```ts
+const off = editor.on('change', handler)
+off()
+```
+
+### Lifecycle
+
+```ts
+editor.mount()    // attach to DOM (waits for DOMContentLoaded if needed)
+editor.unmount()  // detach from DOM, clean up all listeners
+```
+
+## Kerning data format
+
+```ts
+interface KerningExport {
+  version?: number
+  exported: string
+  page: string
+  areas: Array<{
+    selector: string
+    text: string
+    font: { family: string; weight: string; size: string }
+    indent?: number
+    kerning: number[]  // 1/1000em units per character gap
+  }>
+}
+```
+
+## Editor shortcuts
+
+- Cmd/Ctrl + K: toggle edit mode
+- Click: select text block and gap
+- Shift + Click: extend selection to range
+- Tab / Shift+Tab: next / previous gap
+- Arrow Left/Right: move cursor
+- Shift + Arrow Left/Right: extend selection
+- Arrow Up/Down: move vertically
+- Alt + Arrow Left/Right: adjust by +/-10
+- Alt + Cmd/Ctrl + Arrow Left/Right: adjust by +/-100
+- Esc: clear selection
+- B: toggle Before/After compare
+
+When multiple gaps are selected, Alt + Arrow adjusts all at once (tracking).
+
+## HTML attributes
+
+- `data-typespacing-ignore`: add to any element to exclude it from editing
+
+## Key facts
+
+- Zero dependencies, framework-agnostic
+- Spacing via margin-left on per-character spans (not letter-spacing)
+- Preserves inline markup (<em>, <strong>, <span>)
+- Kerning values are in 1/1000em (integer). 100 = 0.1em
+- kerning[i] = gap after character i. indent = gap before first character
+- mount() automatically waits for DOM ready if called early
+- Target elements should be block-level (<p>, <div>, <h1>), not <span>

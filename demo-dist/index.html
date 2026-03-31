@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>typespacing demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@100..900&family=Bungee&family=Rubik+Mono+One&family=Playfair+Display:wght@400..900&family=Cormorant+Garamond:wght@300;600&family=Space+Grotesk:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f2f2f0;
+        --panel: rgba(255, 255, 255, 0.72);
+        --ink: #1a1a1a;
+        --muted: #727270;
+        --accent: #3a3a3a;
+        --line: rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top left, rgba(255, 255, 255, 0.6), transparent 36%),
+          linear-gradient(180deg, #f5f5f3 0%, var(--bg) 100%);
+        color: var(--ink);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        line-height: 1.5;
+      }
+
+      main {
+        width: min(920px, calc(100vw - 48px));
+        margin: 0 auto;
+        padding: 56px 0 96px;
+      }
+
+      .intro {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.9fr);
+        gap: 32px;
+        align-items: start;
+      }
+
+      .eyebrow {
+        margin: 0 0 16px;
+        font: 700 13px/1 'Space Grotesk', sans-serif;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .hero {
+        margin: 0;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(82px, 15vw, 184px);
+        line-height: 0.94;
+        letter-spacing: 0;
+      }
+
+      .lede {
+        margin: 20px 0 0;
+        max-width: 18em;
+        font: 500 clamp(18px, 2.2vw, 28px)/1.45 'Space Grotesk', sans-serif;
+        color: var(--accent);
+      }
+
+      .aside {
+        padding: 22px 24px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: var(--panel);
+        backdrop-filter: blur(12px);
+      }
+
+      .aside h2 {
+        margin: 0 0 10px;
+        font: 700 14px/1.2 'Space Grotesk', sans-serif;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .aside p {
+        margin: 0;
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: 1fr;
+        gap: 24px;
+        margin-top: 42px;
+      }
+
+      .card {
+        padding: 26px 28px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        overflow-wrap: break-word;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .card h2,
+      .card h3,
+      .card p,
+      .card blockquote {
+        margin: 0;
+      }
+
+      [data-sizable] {
+        font-size: calc(var(--size) * 1px);
+      }
+
+      .bebas-hero {
+        font-family: 'Bebas Neue', sans-serif;
+        line-height: 0.94;
+        letter-spacing: 0;
+      }
+
+      .bungee {
+        font-family: 'Bungee', sans-serif;
+        line-height: 1.15;
+      }
+      .bungee span { line-height: inherit; }
+
+      .mixed-type {
+        line-height: 1.05;
+      }
+      .mixed-bebas { font-family: 'Bebas Neue', sans-serif; font-size: 1.1em; }
+      .mixed-playfair { font-family: 'Playfair Display', serif; font-style: italic; }
+      .mixed-inter { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 0.85em; }
+
+      .rubik-mono {
+        font-family: 'Rubik Mono One', sans-serif;
+        line-height: 1.3;
+      }
+
+      .playfair {
+        font-family: 'Playfair Display', serif;
+        line-height: 0.96;
+      }
+
+      .cormorant {
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 300;
+        line-height: 1.2;
+        font-style: italic;
+      }
+
+      .noto-serif-jp {
+        font-family: 'Noto Serif JP', serif;
+        line-height: 1.6;
+        font-weight: 400;
+      }
+
+      .variable-weight {
+        font-family: 'Inter', sans-serif;
+        line-height: 1;
+      }
+
+      .caption {
+        margin-top: 14px;
+        font: 600 13px/1.4 'Space Grotesk', sans-serif;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .card-footer {
+        margin-top: auto;
+        padding-top: 64px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .card-size-slider {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-size-slider label {
+        font: 500 11px/1 'Space Grotesk', sans-serif;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .card-size-slider input[type="range"] {
+        flex: 1;
+        height: 2px;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+      .card-size-slider output {
+        font: 500 11px/1 'Space Grotesk', sans-serif;
+        color: var(--muted);
+        min-width: 36px;
+        text-align: right;
+      }
+
+      .hint {
+        margin-top: 40px;
+        font: 500 14px/1.7 'Space Grotesk', sans-serif;
+        color: var(--muted);
+      }
+
+      code {
+        padding: 0.15em 0.4em;
+        border-radius: 0.4em;
+        background: rgba(0, 0, 0, 0.06);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.95em;
+      }
+
+      /* --- Sandbox --- */
+      .sandbox {
+        margin-top: 48px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--panel);
+        backdrop-filter: blur(12px);
+        overflow: hidden;
+      }
+
+      .sandbox-header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px 24px;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+      }
+
+      .sandbox-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .sandbox-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .sandbox-header label {
+        font: 600 12px/1 'Space Grotesk', sans-serif;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .sandbox-header select,
+      .sandbox-header input[type="number"],
+      .sandbox-header input[type="text"] {
+        padding: 6px 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        font: 500 14px/1.2 'Inter', sans-serif;
+        color: var(--ink);
+        outline: none;
+      }
+
+      .sandbox-header select { min-width: 180px; }
+      .sandbox-header input[type="text"] { min-width: 160px; }
+      .sandbox-header input[type="number"] { width: 72px; }
+
+      .sandbox-or {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .sandbox-btn {
+        padding: 6px 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--ink);
+        color: #fff;
+        font: 600 13px/1.2 'Space Grotesk', sans-serif;
+        cursor: pointer;
+        letter-spacing: 0.04em;
+      }
+      .sandbox-btn:hover { opacity: .85; }
+
+      .sandbox-body {
+        position: relative;
+        padding: 32px 24px;
+        min-height: 120px;
+      }
+
+      .sandbox-resize-handle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        cursor: col-resize;
+        background: transparent;
+        transition: background .15s;
+      }
+      .sandbox-resize-handle:hover,
+      .sandbox-resize-handle.is-dragging {
+        background: rgba(0, 0, 0, .12);
+      }
+
+      .sandbox-preview {
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 1.1;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        outline: none;
+      }
+
+      .sandbox-textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        font: 400 15px/1.6 'Inter', sans-serif;
+        color: var(--ink);
+        resize: none;
+        outline: none;
+        field-sizing: content;
+        min-height: 6lh;
+      }
+      .sandbox-textarea:focus { border-color: rgba(0, 0, 0, .25); }
+
+      @media (max-width: 860px) {
+        main {
+          width: min(100vw - 32px, 920px);
+          padding-top: 36px;
+        }
+
+        .intro,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="/typespacing/assets/index-BpPZa_qw.js"></script>
+  </head>
+  <body>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">Demo</p>
+          <h1 class="hero">TYPE<br />SPACING</h1>
+          <p class="lede">Fine-tune letter spacing in the browser. Export as JSON, apply anywhere.</p>
+        </div>
+
+        <aside class="aside">
+          <h2>Try this page</h2>
+          <p>
+            The editor palette is visible on load. Click any text block, tweak spacing with
+            <code>Alt/Option + ←/→</code>, drag the palette, and collapse it with
+            <code>− / +</code>.
+          </p>
+        </aside>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2 class="bebas-hero" data-sizable style="--size: 175">AVATAR</h2>
+          <div class="card-footer" data-typespacing-ignore>
+            <p class="caption">Bebas Neue / display</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="40" max="300" value="175" /><output>175px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="bungee" data-sizable style="--size: 97"><span style="font-size: calc(var(--size) * 1.124px)">B</span><span style="font-size: calc(var(--size) * 0.753px)">L</span><span style="font-size: calc(var(--size) * 1.247px)">O</span><span style="font-size: calc(var(--size) * 0.567px)">C</span><span style="font-size: calc(var(--size) * 1px)">K</span><br /><span style="font-size: calc(var(--size) * 0.629px)">P</span><span style="font-size: calc(var(--size) * 0.876px)">A</span><span style="font-size: calc(var(--size) * 0.505px)">R</span><span style="font-size: calc(var(--size) * 1.062px)">T</span><span style="font-size: calc(var(--size) * 0.691px)">Y</span></h2>
+          <div class="card-footer" data-typespacing-ignore>
+            <p class="caption">Bungee / mixed size &amp; line-height</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="20" max="200" value="97" /><output>97px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="mixed-type" data-sizable style="--size: 72"><span class="mixed-bebas">M</span><span class="mixed-playfair">i</span><span class="mixed-inter">x</span><span class="mixed-bebas">E</span><span class="mixed-playfair">d</span> <span class="mixed-inter">T</span><span class="mixed-bebas">Y</span><span class="mixed-playfair">p</span><span class="mixed-inter">e</span><span class="mixed-bebas">S</span></p>
+          <div class="card-footer" data-typespacing-ignore>
+            <p class="caption">Bebas Neue + Playfair + Inter / mixed per character</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="20" max="200" value="72" /><output>72px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="playfair" data-sizable style="--size: 67">Typography<br />is atmosphere.</h2>
+          <div class="card-footer" data-typespacing-ignore>
+            <p class="caption">Playfair Display / editorial serif</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="20" max="200" value="67" /><output>67px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="cormorant" data-sizable style="--size: 60">The quick brown fox<br />jumps over the lazy dog</p>
+          <div class="card-footer" data-typespacing-ignore>
+            <p class="caption">Cormorant Garamond / light italic serif</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="16" max="160" value="60" /><output>60px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="rubik-mono vertical-demo" data-sizable style="--size: 42">HEAVY<br />MONO<br />WEIGHT</p>
+          <div class="card-footer" data-typespacing-ignore>
+            <p class="caption">Rubik Mono One / ultra-bold mono</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="14" max="120" value="42" /><output>42px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="variable-weight" data-sizable style="--size: 127"><span style="font-weight:900">V</span><span style="font-weight:100">A</span><span style="font-weight:800">R</span><span style="font-weight:100">I</span><span style="font-weight:900">A</span><span style="font-weight:100">B</span><span style="font-weight:700">L</span><span style="font-weight:100">E</span></p>
+          <div class="card-footer" data-typespacing-ignore>
+            <p class="caption">Inter Variable / weight 100→900</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="24" max="200" value="127" /><output>127px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="noto-serif-jp" data-sizable style="--size: 48">あのイーハトーヴォのすきとおった風</p>
+          <div class="card-footer" data-typespacing-ignore>
+            <p class="caption">Noto Serif JP / 和文明朝</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="16" max="120" value="48" /><output>48px</output></div>
+          </div>
+        </article>
+
+      </section>
+
+      <p class="hint">
+        Click a text block to start editing. Use <code>Tab</code> to move gaps, <code>B</code> to compare,
+        and <code>Cmd/Ctrl + K</code> if you want to toggle the editor.
+      </p>
+
+      <section class="sandbox" id="sandbox">
+        <div class="sandbox-header" data-typespacing-ignore>
+          <div class="sandbox-controls">
+            <div class="sandbox-row">
+              <label for="sb-font">Font</label>
+              <select id="sb-font"></select>
+              <span class="sandbox-or">or</span>
+              <input type="text" id="sb-font-custom" placeholder="Custom font name" />
+            </div>
+            <div class="sandbox-row">
+              <label for="sb-size">Size</label>
+              <input type="number" id="sb-size" value="48" min="10" max="400" step="1" />
+              <label for="sb-weight">Weight</label>
+              <select id="sb-weight">
+                <option value="400">400</option>
+                <option value="500">500</option>
+                <option value="600">600</option>
+                <option value="700" selected>700</option>
+                <option value="800">800</option>
+                <option value="900">900</option>
+              </select>
+            </div>
+          </div>
+          <button class="sandbox-btn" id="sb-export">Export HTML</button>
+        </div>
+        <div class="sandbox-body" id="sb-body">
+          <textarea class="sandbox-textarea" id="sb-input" rows="2" placeholder="Type your text here…">Your Headline Here</textarea>
+          <p class="sandbox-preview" id="sb-preview">Your Headline Here</p>
+          <div class="sandbox-resize-handle" id="sb-resize"></div>
+        </div>
+      </section>
+    </main>
+
+  </body>
+</html>
