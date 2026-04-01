@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  release:
+    types:
+      - published
+
+jobs:
+  build-and-test:
+    if: github.event_name != 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build package
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run smoke tests
+        run: npm run smoke:ci
+
+  release:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify package version matches tag
+        run: |
+          RAW_TAG="${{ github.event.release.tag_name }}"
+          TAG_VERSION="${RAW_TAG#v}"
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+            echo "Tag version ($TAG_VERSION) does not match package.json version ($PACKAGE_VERSION)." >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build package
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run smoke tests
+        run: npm run smoke:ci
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
