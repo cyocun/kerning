@@ -1,8 +1,8 @@
 import type { KerningExport } from './applyKerning'
 import { sanitizePersistedKerningData, type PersistedKerningArea } from './validation'
 
-export const TOOL_NAME = 'visual-kerning'
-export const LOG_PREFIX = `[${TOOL_NAME}]`
+export const TOOL_NAME = 'visual kerning'
+export const LOG_PREFIX = '[visual-kerning]'
 export const STORAGE_KEY = 'visual-kerning-editor-data'
 const LEGACY_STORAGE_KEY = 'typespacing-editor-data'
 

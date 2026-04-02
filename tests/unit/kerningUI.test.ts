@@ -40,7 +40,7 @@ describe('createKerningEditor', () => {
     flushAnimationFrame()
     flushAnimationFrame()
 
-    expect(document.querySelector('.visual-kerning-panel strong')?.textContent).toBe('visual-kerning')
+    expect(document.querySelector('.visual-kerning-panel strong')?.textContent).toBe('visual kerning')
 
     const marker = document.querySelector('.visual-kerning-gap-marker')
     expect(marker).not.toBeNull()
