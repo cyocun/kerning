@@ -63,8 +63,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Verify package version matches tag
+        env:
+          RAW_TAG: ${{ github.event.release.tag_name }}
         run: |
-          RAW_TAG="${{ github.event.release.tag_name }}"
           TAG_VERSION="${RAW_TAG#v}"
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
