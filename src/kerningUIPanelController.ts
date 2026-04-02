@@ -15,14 +15,19 @@ export interface KerningUIPanelController {
   dispose(): void
 }
 
+const MARGIN = 12
+const DEFAULT_OFFSET = 16
+/** panelBottom がこの値以下なら最下部とみなし、下方向に折りたたむ */
+const BOTTOM_ANCHOR_THRESHOLD = 30
+const FALLBACK_WIDTH = 280
+const FALLBACK_HEIGHT = 120
+
 export function createKerningUIPanelController(options: PanelControllerOptions): KerningUIPanelController {
   const { panelEl, panelBodyEl, collapseBtn, getCollapseLabel, getExpandLabel } = options
 
   let collapsed = false
   let panelPositioned = false
-  /** 右端からのオフセット */
   let panelRight = 0
-  /** 下端からのオフセット */
   let panelBottom = 0
   let dragPointerId: number | null = null
   let dragOffsetX = 0
@@ -30,17 +35,25 @@ export function createKerningUIPanelController(options: PanelControllerOptions):
 
   function getPanelSize() {
     return {
-      width: panelEl.offsetWidth || 280,
-      height: panelEl.offsetHeight || 120,
+      width: panelEl.offsetWidth || FALLBACK_WIDTH,
+      height: panelEl.offsetHeight || FALLBACK_HEIGHT,
+    }
+  }
+
+  /** right/bottom オフセットから left/top ピクセル値を算出 */
+  function toLeftTop(right: number, bottom: number) {
+    const { width, height } = getPanelSize()
+    return {
+      left: window.innerWidth - right - width,
+      top: window.innerHeight - bottom - height,
     }
   }
 
   function clampOffsets(right: number, bottom: number) {
-    const margin = 12
     const { width, height } = getPanelSize()
     return {
-      right: Math.min(Math.max(margin, right), Math.max(margin, window.innerWidth - width - margin)),
-      bottom: Math.min(Math.max(margin, bottom), Math.max(margin, window.innerHeight - height - margin)),
+      right: Math.min(Math.max(MARGIN, right), Math.max(MARGIN, window.innerWidth - width - MARGIN)),
+      bottom: Math.min(Math.max(MARGIN, bottom), Math.max(MARGIN, window.innerHeight - height - MARGIN)),
     }
   }
 
@@ -48,16 +61,25 @@ export function createKerningUIPanelController(options: PanelControllerOptions):
     const clamped = clampOffsets(panelRight, panelBottom)
     panelRight = clamped.right
     panelBottom = clamped.bottom
-    const { width, height } = getPanelSize()
-    panelEl.style.left = `${window.innerWidth - panelRight - width}px`
-    panelEl.style.top = `${window.innerHeight - panelBottom - height}px`
+    const { left, top } = toLeftTop(panelRight, panelBottom)
+    panelEl.style.left = `${left}px`
+    panelEl.style.top = `${top}px`
+  }
+
+  function removeDragListeners() {
+    window.removeEventListener('pointermove', onPointerMove)
+    window.removeEventListener('pointerup', onPointerEnd)
+    window.removeEventListener('pointercancel', onPointerEnd)
   }
 
   function onPointerMove(event: PointerEvent) {
     if (dragPointerId !== event.pointerId) return
+    const { left, top } = toLeftTop(panelRight, panelBottom)
+    const newLeft = event.clientX - dragOffsetX
+    const newTop = event.clientY - dragOffsetY
     const { width, height } = getPanelSize()
-    panelRight = window.innerWidth - (event.clientX - dragOffsetX) - width
-    panelBottom = window.innerHeight - (event.clientY - dragOffsetY) - height
+    panelRight += left - newLeft
+    panelBottom += top - newTop
     syncPanelPosition()
   }
 
@@ -65,12 +87,12 @@ export function createKerningUIPanelController(options: PanelControllerOptions):
     if (dragPointerId !== event.pointerId) return
     dragPointerId = null
     panelEl.classList.remove('is-dragging')
-    window.removeEventListener('pointermove', onPointerMove)
-    window.removeEventListener('pointerup', onPointerEnd)
-    window.removeEventListener('pointercancel', onPointerEnd)
+    removeDragListeners()
   }
 
   function setCollapsed(next: boolean) {
+    const changed = collapsed !== next
+    const heightBefore = changed ? panelEl.offsetHeight : 0
     collapsed = next
     panelEl.classList.toggle('is-collapsed', collapsed)
     panelBodyEl.hidden = collapsed
@@ -78,6 +100,9 @@ export function createKerningUIPanelController(options: PanelControllerOptions):
     collapseBtn.textContent = collapsed ? '+' : '−'
     collapseBtn.setAttribute('aria-label', label)
     collapseBtn.title = label
+    if (changed && panelBottom > BOTTOM_ANCHOR_THRESHOLD) {
+      panelBottom += heightBefore - panelEl.offsetHeight
+    }
     window.requestAnimationFrame(syncPanelPosition)
   }
 
@@ -88,8 +113,8 @@ export function createKerningUIPanelController(options: PanelControllerOptions):
     },
     positionDefault() {
       if (!panelPositioned) {
-        panelRight = 16
-        panelBottom = 16
+        panelRight = DEFAULT_OFFSET
+        panelBottom = DEFAULT_OFFSET
         panelPositioned = true
       }
       syncPanelPosition()
@@ -98,11 +123,8 @@ export function createKerningUIPanelController(options: PanelControllerOptions):
       if (panelPositioned) syncPanelPosition()
     },
     startDrag(event: PointerEvent) {
-      const target = event.target as HTMLElement
-      if (target.closest('button')) return
-      const { width, height } = getPanelSize()
-      const left = window.innerWidth - panelRight - width
-      const top = window.innerHeight - panelBottom - height
+      if ((event.target as HTMLElement).closest('button')) return
+      const { left, top } = toLeftTop(panelRight, panelBottom)
       dragPointerId = event.pointerId
       dragOffsetX = event.clientX - left
       dragOffsetY = event.clientY - top
@@ -113,9 +135,7 @@ export function createKerningUIPanelController(options: PanelControllerOptions):
     },
     dispose() {
       dragPointerId = null
-      window.removeEventListener('pointermove', onPointerMove)
-      window.removeEventListener('pointerup', onPointerEnd)
-      window.removeEventListener('pointercancel', onPointerEnd)
+      removeDragListeners()
     },
   }
 }
