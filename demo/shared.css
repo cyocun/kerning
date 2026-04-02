@@ -338,6 +338,48 @@ main {
   user-select: all;
 }
 
+/* --- Use cases list (inside for-designers) --- */
+.use-cases {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.use-case-item {
+  padding: 14px 0;
+}
+.use-case-item + .use-case-item {
+  border-top: 1px solid var(--line);
+}
+.use-case-label {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.use-case-label strong {
+  font-weight: 600;
+}
+.use-case-label span {
+  color: var(--muted);
+}
+.use-case-logos {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.use-case-logos img {
+  height: 18px;
+  width: auto;
+  opacity: 0.45;
+  filter: grayscale(1);
+  transition: opacity 0.2s, filter 0.2s;
+}
+.use-case-logos img:hover {
+  opacity: 1;
+  filter: grayscale(0);
+}
+
 /* --- For engineers section --- */
 .for-engineers {
   margin-top: 20px;
