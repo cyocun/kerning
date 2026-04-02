@@ -247,9 +247,8 @@ main {
 }
 .for-designers h2 {
   margin: 0 0 16px;
-  font: 700 14px/1.2 'Space Grotesk', sans-serif;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 700 18px/1.2 'Space Grotesk', sans-serif;
+  letter-spacing: 0.08em;
 }
 .for-designers-intro {
   margin: 0 0 20px;
@@ -266,9 +265,15 @@ main {
 }
 .for-designers h3 {
   margin: 0 0 12px;
-  font: 600 13px/1.2 'Space Grotesk', sans-serif;
-  letter-spacing: 0.06em;
+  font: 600 15px/1.2 'Space Grotesk', sans-serif;
+  letter-spacing: 0.04em;
   color: var(--accent);
+}
+.for-designers-subhead {
+  margin: 0 0 12px;
+  font: 600 13px/1.4 'Space Grotesk', sans-serif;
+  letter-spacing: 0.04em;
+  color: var(--ink);
 }
 .for-designers-note {
   margin: 8px 0 0;
@@ -338,46 +343,34 @@ main {
   user-select: all;
 }
 
-/* --- Use cases list (inside for-designers) --- */
-.use-cases {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+/* --- Export layout (inside for-designers) --- */
+.for-designers-export-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
 }
-.use-case-item {
-  padding: 14px 0;
+.for-designers-export-logos {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.025);
+  border: 1px solid var(--line);
 }
-.use-case-item + .use-case-item {
-  border-top: 1px solid var(--line);
-}
-.use-case-label {
-  margin: 0 0 8px;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--ink);
-}
-.use-case-label strong {
-  font-weight: 600;
-}
-.use-case-label span {
-  color: var(--muted);
+.for-designers-export-logos .for-designers-note {
+  margin: 0 0 14px;
 }
 .use-case-logos {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 28px 36px;
   flex-wrap: wrap;
+  padding: 8px 0;
 }
 .use-case-logos img {
-  height: 18px;
+  height: 34px;
   width: auto;
-  opacity: 0.45;
-  filter: grayscale(1);
-  transition: opacity 0.2s, filter 0.2s;
-}
-.use-case-logos img:hover {
-  opacity: 1;
-  filter: grayscale(0);
+  max-width: none;
+  object-fit: contain;
 }
 
 /* --- For engineers section --- */
@@ -961,6 +954,9 @@ code {
 
   .for-designers-steps {
     font-size: 14px;
+  }
+  .for-designers-export-layout {
+    grid-template-columns: 1fr;
   }
 
   .for-engineers-usage {
