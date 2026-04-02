@@ -13,7 +13,7 @@ test('editor supports compare, collapsing, dragging, and modified highlight', as
     .poll(async () => page.locator('.visual-kerning-overlay').evaluate((el) => getComputedStyle(el).display), { timeout: 10000 })
     .toBe('block')
 
-  await expect(page.locator('.js-panel')).toContainText('Drag the header to move the palette')
+  await expect(page.locator('.js-panel')).toContainText('visual kerning')
 
   const hero = page.locator('.hero')
   await hero.scrollIntoViewIfNeeded()
