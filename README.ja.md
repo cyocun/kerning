@@ -23,7 +23,7 @@
 - 静的ビルド: `npm run demo:build`
 
 > 編集UIは主に開発環境やステージング環境で使う想定です。
-> 本番では `createKerningEditor({ editable: false, kerning })` で適用します。
+> 本番では `visualKerning({ editable: false, kerning })` で適用します。
 
 ## visual-kerning でできること
 
@@ -60,14 +60,14 @@ npm install visual-kerning
 ## 基本的な使い方
 
 ```ts
-import { createKerningEditor } from 'visual-kerning'
+import { visualKerning } from 'visual-kerning'
 ```
 
 **1. 編集** — 開発環境やステージングでエディタをマウント。
 ブラウザ上でカーニングを調整し、パレットからJSONを書き出す。
 
 ```ts
-const editor = createKerningEditor({ editable: true })
+const editor = visualKerning({ editable: true })
 editor.mount()
 ```
 
@@ -77,7 +77,7 @@ editor.mount()
 **2. 適用** — 書き出したJSONを本番でマウント。
 
 ```ts
-const editor = createKerningEditor({ editable: false, kerning: kerningData })
+const editor = visualKerning({ editable: false, kerning: kerningData })
 editor.mount()
 ```
 
@@ -114,12 +114,12 @@ editor.mount()
 
 ## Public API
 
-### `createKerningEditor(options?)`
+### `visualKerning(options?)`
 
 編集と本番適用の両方をカバーする、唯一の公開API。
 
 ```ts
-const editor = createKerningEditor({
+const editor = visualKerning({
   locale: 'en',          // 'ja' | 'en'（デフォルト: 'en'）
   editable: true,        // 編集UIを表示する（デフォルト: true）
   kerning: kerningData,  // mount 時に適用する KerningExport データ
@@ -219,7 +219,7 @@ visual-kerning は各文字を `<span>` で分割するため、
 これを防ぐには、本番モードで `accessible` オプションを有効にしてください:
 
 ```ts
-const editor = createKerningEditor({
+const editor = visualKerning({
   editable: false,
   kerning: kerningData,
   accessible: true,

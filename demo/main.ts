@@ -1,4 +1,4 @@
-import { createKerningEditor } from '../src/kerningUI'
+import { visualKerning } from '../src/kerningUI'
 import { ACTIVE_CLASS, CHAR_CLASS, MODIFIED_CLASS, STORAGE_KEY } from '../src/kerningEditor'
 import kerningData from './kerning-export.json'
 import { createTour } from './tour'
@@ -63,7 +63,7 @@ if (localStorage.getItem(IMPORTED_KEY)) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(areasToPersistedMap(kerningData.areas)))
 }
 
-const editor = createKerningEditor({ locale: m.editorLocale })
+const editor = visualKerning({ locale: m.editorLocale })
 editor.mount()
 
 if (localStorage.getItem(TUTORIAL_DONE_KEY)) {

@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createKerningEditor } from '../../src/kerningUI'
+import { visualKerning } from '../../src/kerningUI'
 import type { KerningExport } from '../../src/applyKerning'
 
-describe('createKerningEditor', () => {
+describe('visualKerning', () => {
   const rafQueue: FrameRequestCallback[] = []
   let originalRequestAnimationFrame: typeof window.requestAnimationFrame
   let originalCancelAnimationFrame: typeof window.cancelAnimationFrame
@@ -32,7 +32,7 @@ describe('createKerningEditor', () => {
     })
     window.cancelAnimationFrame = vi.fn()
 
-    const editor = createKerningEditor({ locale: 'en' })
+    const editor = visualKerning({ locale: 'en' })
     editor.plugin.enabled.value = true
     editor.plugin.gapMarkers.value = [{ x: 10, y: 20, h: 30, value: 40 }]
 
@@ -74,7 +74,7 @@ describe('createKerningEditor', () => {
       }],
     }
 
-    const editor = createKerningEditor({ locale: 'en', kerning: payload })
+    const editor = visualKerning({ locale: 'en', kerning: payload })
     editor.mount()
     vi.runAllTimers()
     flushAnimationFrame()
@@ -95,7 +95,7 @@ describe('createKerningEditor', () => {
     })
     window.cancelAnimationFrame = vi.fn()
 
-    const editor = createKerningEditor({ locale: 'en' })
+    const editor = visualKerning({ locale: 'en' })
     editor.plugin.enabled.value = true
     editor.mount()
     flushAnimationFrame()

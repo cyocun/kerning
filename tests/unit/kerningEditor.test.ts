@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { CHAR_CLASS, createKerningPlugin, STORAGE_KEY } from '../../src/kerningEditor'
+import { CHAR_CLASS, createVisualKerningPlugin, STORAGE_KEY } from '../../src/kerningEditor'
 
-describe('createKerningPlugin persistence', () => {
+describe('createVisualKerningPlugin persistence', () => {
   afterEach(() => {
     vi.useRealTimers()
     vi.restoreAllMocks()
@@ -21,7 +21,7 @@ describe('createKerningPlugin persistence', () => {
       },
     }))
 
-    const plugin = createKerningPlugin()
+    const plugin = createVisualKerningPlugin()
     plugin.mount()
     vi.runAllTimers()
 
@@ -54,7 +54,7 @@ describe('createKerningPlugin persistence', () => {
     }))
 
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const plugin = createKerningPlugin()
+    const plugin = createVisualKerningPlugin()
     plugin.mount()
     vi.runAllTimers()
 
@@ -73,7 +73,7 @@ describe('createKerningPlugin persistence', () => {
   })
 
   it('toggles enabled state with Ctrl/Cmd+K and emits lifecycle events', () => {
-    const plugin = createKerningPlugin()
+    const plugin = createVisualKerningPlugin()
     const onEnable = vi.fn()
     const onDisable = vi.fn()
     plugin.on('enable', onEnable)
@@ -111,7 +111,7 @@ describe('createKerningPlugin persistence', () => {
       },
     }))
 
-    const plugin = createKerningPlugin()
+    const plugin = createVisualKerningPlugin()
     plugin.mount()
     vi.runAllTimers()
 
@@ -124,7 +124,7 @@ describe('createKerningPlugin persistence', () => {
 
   it('still respects the legacy ignore attribute', () => {
     document.body.innerHTML = '<div data-typespacing-ignore><p id="title">AV</p></div>'
-    const plugin = createKerningPlugin()
+    const plugin = createVisualKerningPlugin()
     plugin.enabled.value = true
     plugin.mount()
 

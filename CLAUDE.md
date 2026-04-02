@@ -7,7 +7,7 @@
 - ライブラリ名: `visual-kerning`
 - 目的: ブラウザ上で調整したカーニングをJSON化し、DOMに適用する
 - 主要公開API:
-  - `createKerningEditor` — 統合API（editable オプションで編集/本番切替）
+  - `visualKerning` — 統合API（editable オプションで編集/本番切替）
 - 外部依存ゼロ（フレームワーク非依存）
 
 ## Key files

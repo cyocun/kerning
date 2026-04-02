@@ -9,7 +9,7 @@ describe('public API surface', () => {
       'MODIFIED_CLASS',
       'SR_ONLY_CLASS',
       'VISUAL_CLASS',
-      'createKerningEditor',
+      'visualKerning',
     ])
   })
 })

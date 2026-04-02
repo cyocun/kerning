@@ -3,11 +3,11 @@ import { editorMessages, type EditorLocale } from './editorMessages'
 import {
   ACTIVE_CLASS,
   CHAR_CLASS,
-  createKerningPlugin,
+  createVisualKerningPlugin,
   MODIFIED_CLASS,
   OVERLAY_CLASS,
   seedPersistedKerningData,
-  type KerningEditorPlugin,
+  type VisualKerningPlugin,
 } from './kerningEditor'
 import { createKerningUIPanelController } from './kerningUIPanelController'
 import { createKerningUIRoot } from './kerningUIRoot'
@@ -41,7 +41,7 @@ function mergeSelectionRects(rects: { x: number; y: number; h: number }[]): Merg
   return rows
 }
 
-export interface KerningEditorOptions {
+export interface VisualKerningOptions {
   /** UI language for the editor palette (default: `'en'`). */
   locale?: EditorLocale
   /**
@@ -83,12 +83,12 @@ export interface KerningEditorOptions {
   accessible?: boolean
 }
 
-export interface KerningEditor extends KerningEditorPlugin {
-  plugin: KerningEditorPlugin
+export interface VisualKerning extends VisualKerningPlugin {
+  plugin: VisualKerningPlugin
 }
 
-export function createKerningEditor(options: KerningEditorOptions = {}): KerningEditor {
-  const plugin = createKerningPlugin()
+export function visualKerning(options: VisualKerningOptions = {}): VisualKerning {
+  const plugin = createVisualKerningPlugin()
   const locale = options.locale ?? 'en'
   const editable = options.editable ?? true
   const t = editorMessages[locale]
@@ -360,7 +360,7 @@ export function createKerningEditor(options: KerningEditorOptions = {}): Kerning
     if (mounted) panelController.onResize()
   }
 
-  const editor: KerningEditor = {
+  const editor: VisualKerning = {
     ...plugin,
     plugin,
     mount() {

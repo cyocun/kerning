@@ -62,7 +62,7 @@ export interface KerningSelectDetail {
   gapIndexEnd: number | null
 }
 
-export interface KerningEditorEventMap {
+export interface VisualKerningEventMap {
   enable: undefined
   disable: undefined
   change: KerningChangeDetail
@@ -70,12 +70,12 @@ export interface KerningEditorEventMap {
   reset: undefined
 }
 
-export interface KerningEventEmitter extends TypedEventEmitter<KerningEditorEventMap> {}
+export interface VisualKerningEmitter extends TypedEventEmitter<VisualKerningEventMap> {}
 
 export { ACTIVE_CLASS, CHAR_CLASS, MODIFIED_CLASS } from './applyKerning'
 export const OVERLAY_CLASS = 'visual-kerning-overlay'
 
-export interface KerningEditorArea {
+export interface VisualKerningArea {
   selector: string
   el: HTMLElement
   text: string
@@ -97,14 +97,14 @@ export interface GapMarker {
   value: number
 }
 
-export interface KerningEditorPlugin extends KerningEventEmitter {
+export interface VisualKerningPlugin extends VisualKerningEmitter {
   name: string
   enabled: ValueBox<boolean>
   compareMode: ValueBox<boolean>
   showGapMarkers: ValueBox<boolean>
   mount(): void
   unmount(): void
-  areas: ValueBox<Map<string, KerningEditorArea>>
+  areas: ValueBox<Map<string, VisualKerningArea>>
   activeSelector: ValueBox<string | null>
   cursorGap: ValueBox<number>
   cursorGapEnd: ValueBox<number | null>
@@ -118,11 +118,11 @@ export interface KerningEditorPlugin extends KerningEventEmitter {
   resetAll(): void
 }
 
-function isAreaModified(area: Pick<KerningEditorArea, 'indent' | 'kerning'>): boolean {
+function isAreaModified(area: Pick<VisualKerningArea, 'indent' | 'kerning'>): boolean {
   return area.indent !== 0 || area.kerning.some(k => k !== 0)
 }
 
-function toPersistedData(areas: Map<string, KerningEditorArea>): Record<string, PersistedKerningArea> {
+function toPersistedData(areas: Map<string, VisualKerningArea>): Record<string, PersistedKerningArea> {
   const data: Record<string, PersistedKerningArea> = {}
   areas.forEach((area, selector) => {
     if (isAreaModified(area)) {
@@ -262,13 +262,13 @@ function generateSelector(el: Element): string {
   return full
 }
 
-export function createKerningPlugin(): KerningEditorPlugin {
-  const emitter = createTypedEventEmitter<KerningEditorEventMap>()
+export function createVisualKerningPlugin(): VisualKerningPlugin {
+  const emitter = createTypedEventEmitter<VisualKerningEventMap>()
   let loadTimerId = 0
   const enabled = valueBox(false)
   const compareMode = valueBox(false)
   const showGapMarkers = watchedValueBox(false, () => updateGapMarkers())
-  const areas = valueBox(new Map<string, KerningEditorArea>())
+  const areas = valueBox(new Map<string, VisualKerningArea>())
   const activeSelector = valueBox<string | null>(null)
   const cursorGap = valueBox(-2)
   const cursorGapEnd = valueBox<number | null>(null)
@@ -376,7 +376,7 @@ export function createKerningPlugin(): KerningEditorPlugin {
     gapMarkers.value = markers
   }
 
-  function applyAreaPreview(area: KerningEditorArea) {
+  function applyAreaPreview(area: VisualKerningArea) {
     const spans = getCharSpans(area.el)
     if (compareMode.value) {
       applyKerningToSpans(spans, new Array(area.kerning.length).fill(0), 0)

@@ -10,16 +10,16 @@ npm install visual-kerning
 
 ## API
 
-Single public entry point: `createKerningEditor(options?)`
+Single public entry point: `visualKerning(options?)`
 
 ```ts
-import { createKerningEditor } from 'visual-kerning'
+import { visualKerning } from 'visual-kerning'
 ```
 
 ### Options
 
 ```ts
-interface KerningEditorOptions {
+interface VisualKerningOptions {
   editable?: boolean      // true = editing UI, false = apply only (default: true)
   kerning?: KerningExport // kerning data to apply on mount
   locale?: 'en' | 'ja'   // UI language (default: 'en')
@@ -30,14 +30,14 @@ interface KerningEditorOptions {
 ### Edit (development / staging)
 
 ```ts
-const editor = createKerningEditor({ editable: true })
+const editor = visualKerning({ editable: true })
 editor.mount()
 ```
 
 Pass `kerning` to resume editing from a previous export:
 
 ```ts
-const editor = createKerningEditor({ editable: true, kerning: previousData })
+const editor = visualKerning({ editable: true, kerning: previousData })
 editor.mount()
 ```
 
@@ -46,7 +46,7 @@ editor.mount()
 ```ts
 import kerningData from './kerning-export.json'
 
-const editor = createKerningEditor({ editable: false, kerning: kerningData })
+const editor = visualKerning({ editable: false, kerning: kerningData })
 editor.mount()
 ```
 

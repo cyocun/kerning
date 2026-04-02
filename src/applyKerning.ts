@@ -3,8 +3,8 @@ import { assertValidKerningExport } from './validation'
 /**
  * カーニングJSON適用ユーティリティ
  *
- * `createKerningEditor({ editable: false, kerning })` が内部で利用する
- * 低レベル実装。公開APIは `createKerningEditor` を想定する。
+ * `visualKerning({ editable: false, kerning })` が内部で利用する
+ * 低レベル実装。公開APIは `visualKerning` を想定する。
  */
 
 export interface KerningArea {

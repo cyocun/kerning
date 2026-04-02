@@ -23,7 +23,7 @@ and apply it to production DOM without tying yourself to a specific framework.
 - Static build: `npm run demo:build`
 
 > The editing UI is intended for development and staging.
-> In production, use `createKerningEditor({ editable: false, kerning })`.
+> In production, use `visualKerning({ editable: false, kerning })`.
 
 ## Why visual-kerning
 
@@ -60,14 +60,14 @@ npm install visual-kerning
 ## The intended workflow
 
 ```ts
-import { createKerningEditor } from 'visual-kerning'
+import { visualKerning } from 'visual-kerning'
 ```
 
 **1. Edit** — mount the editor in development or staging.
 Adjust kerning visually, then export JSON from the palette.
 
 ```ts
-const editor = createKerningEditor({ editable: true })
+const editor = visualKerning({ editable: true })
 editor.mount()
 ```
 
@@ -77,7 +77,7 @@ to continue editing from a previous export.
 **2. Apply** — mount with the exported JSON in production.
 
 ```ts
-const editor = createKerningEditor({ editable: false, kerning: kerningData })
+const editor = visualKerning({ editable: false, kerning: kerningData })
 editor.mount()
 ```
 
@@ -114,12 +114,12 @@ add `data-visual-kerning-ignore`:
 
 ## Public API
 
-### `createKerningEditor(options?)`
+### `visualKerning(options?)`
 
 The single public entry point for both editing and production use.
 
 ```ts
-const editor = createKerningEditor({
+const editor = visualKerning({
   locale: 'en',          // 'ja' | 'en' (default: 'en')
   editable: true,        // show editing UI (default: true)
   kerning: kerningData,  // apply KerningExport on mount
@@ -219,7 +219,7 @@ which can cause screen readers to read text one character at a time.
 To prevent this, enable the `accessible` option in production mode:
 
 ```ts
-const editor = createKerningEditor({
+const editor = visualKerning({
   editable: false,
   kerning: kerningData,
   accessible: true,
