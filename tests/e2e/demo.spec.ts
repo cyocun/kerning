@@ -3,8 +3,14 @@ import { test, expect } from '@playwright/test'
 test('editor supports compare, collapsing, dragging, and modified highlight', async ({ page }) => {
   await page.goto('/')
 
+  // ツアーのイントロ待ちをスキップしてエディタを即座に有効化
+  await page.waitForFunction(() => (window as any).__kerningDemo)
+  await page.evaluate(() => {
+    ;(window as any).__kerningDemo.plugin.enabled.value = true
+  })
+
   await expect
-    .poll(async () => page.locator('.visual-kerning-overlay').evaluate((el) => getComputedStyle(el).display))
+    .poll(async () => page.locator('.visual-kerning-overlay').evaluate((el) => getComputedStyle(el).display), { timeout: 10000 })
     .toBe('block')
 
   await expect(page.locator('.js-panel')).toContainText('Drag the header to move the palette')
@@ -22,15 +28,16 @@ test('editor supports compare, collapsing, dragging, and modified highlight', as
     .poll(async () => hero.evaluate((el) => getComputedStyle(el).outlineStyle))
     .not.toBe('none')
 
-  const firstSpan = page.locator('.hero .visual-kerning-char').first()
-  const before = await firstSpan.evaluate((el) => ({
+  // カーニングデータで非ゼロのmarginを持つspanを使う（indent=0のためfirstは0）
+  const kernedSpan = page.locator('.hero .visual-kerning-char').nth(2)
+  const before = await kernedSpan.evaluate((el) => ({
     marginRight: getComputedStyle(el).marginRight,
     marginLeft: getComputedStyle(el).marginLeft,
   }))
   expect(before.marginRight !== '0px' || before.marginLeft !== '0px').toBeTruthy()
 
   await page.locator('.js-compare').click()
-  const compared = await firstSpan.evaluate((el) => ({
+  const compared = await kernedSpan.evaluate((el) => ({
     marginRight: getComputedStyle(el).marginRight,
     marginLeft: getComputedStyle(el).marginLeft,
   }))
@@ -38,7 +45,7 @@ test('editor supports compare, collapsing, dragging, and modified highlight', as
   expect(compared.marginLeft).toBe('0px')
 
   await page.locator('.js-compare').click()
-  const restored = await firstSpan.evaluate((el) => ({
+  const restored = await kernedSpan.evaluate((el) => ({
     marginRight: getComputedStyle(el).marginRight,
     marginLeft: getComputedStyle(el).marginLeft,
   }))
