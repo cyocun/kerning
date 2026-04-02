@@ -3,6 +3,12 @@ import { ACTIVE_CLASS, CHAR_CLASS, MODIFIED_CLASS, STORAGE_KEY } from '../src/ke
 import kerningData from './kerning-export.json'
 import { createTour } from './tour'
 import { buildTutorialSteps, simulateCmdK, TUTORIAL_DONE_KEY } from './tutorial'
+import { en } from './locales/en'
+import { ja } from './locales/ja'
+import type { DemoMessages } from './locales/types'
+
+const lang = document.documentElement.lang
+const m: DemoMessages = lang === 'ja' ? ja : en
 
 type PersistedArea = { text: string; kerning: number[]; indent: number; font: { family: string; weight: string; size: string } }
 type SelectOption = { value: string; text: string }
@@ -30,6 +36,13 @@ if (!Choices) {
   throw new Error('Choices.js is not loaded')
 }
 
+// 言語切り替え: localStorage に保存
+document.querySelectorAll<HTMLAnchorElement>('.lang-toggle a[data-lang]').forEach(link => {
+  link.addEventListener('click', () => {
+    localStorage.setItem('visual-kerning-demo-lang', link.dataset.lang!)
+  })
+})
+
 function areasToPersistedMap(areas: typeof kerningData.areas): Record<string, PersistedArea> {
   const persisted: Record<string, PersistedArea> = {}
   for (const area of areas) {
@@ -43,8 +56,6 @@ function areasToPersistedMap(areas: typeof kerningData.areas): Record<string, Pe
   return persisted
 }
 
-// ドロップインポート時: インポートデータを維持、フラグ消化
-// 通常時: localStorageクリア → バンドルJSONを書き込み
 if (localStorage.getItem(IMPORTED_KEY)) {
   localStorage.removeItem(IMPORTED_KEY)
 } else {
@@ -53,23 +64,27 @@ if (localStorage.getItem(IMPORTED_KEY)) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(areasToPersistedMap(kerningData.areas)))
 }
 
-const editor = createKerningEditor({ locale: 'en' })
+const editor = createKerningEditor({ locale: m.editorLocale })
 editor.mount()
 
-// チュートリアル済みならエディタONで開始、初回はOFFでチュートリアルから
 if (localStorage.getItem(TUTORIAL_DONE_KEY)) {
   editor.plugin.enabled.value = true
 }
 
+const isMac = navigator.platform.includes('Mac')
+const altKey = isMac ? 'Option' : 'Alt'
+const tutorialContent = m.tutorialContent({ isMac, altKey })
+
 const tour = createTour({
   doneKey: TUTORIAL_DONE_KEY,
-  steps: buildTutorialSteps((handler) => editor.plugin.on('enable', handler)),
+  steps: buildTutorialSteps((handler) => editor.plugin.on('enable', handler), tutorialContent),
   onBeforeReplay: () => simulateCmdK(),
   ignoreAttr: 'data-visual-kerning-ignore',
+  skipLabel: m.skipLabel,
+  replayLabel: m.replayLabel,
 })
 tour.start()
 
-// ロード完了後のlocalStorage状態を記録し、変更があれば離脱時に警告
 let initialState = ''
 setTimeout(() => {
   initialState = localStorage.getItem(STORAGE_KEY) ?? ''
@@ -187,20 +202,20 @@ const sandboxBody = document.getElementById('sb-body') as HTMLDivElement
 // Font selector
 const baseGoogleOptions = GOOGLE_FONTS.map(font => ({ value: font, text: font }))
 fontGoogleSelect.append(...baseGoogleOptions.map(option => new Option(option.text, option.value)))
-fontGoogleSelect.value = 'Inter'
+fontGoogleSelect.value = m.defaultGoogleFont
 
 const baseLocalFonts = uniqueSorted(DEFAULT_LOCAL_FONTS)
 const baseLocalOptions = baseLocalFonts.map(font => ({ value: font, text: font }))
 fontLocalSelect.append(...baseLocalOptions.map(option => new Option(option.text, option.value)))
-const defaultLocalFont = baseLocalFonts.includes('system-ui') ? 'system-ui' : baseLocalFonts[0] ?? ''
+const defaultLocalFont = m.preferredLocalFonts.find(f => baseLocalFonts.includes(f)) ?? baseLocalFonts[0] ?? ''
 if (defaultLocalFont) fontLocalSelect.value = defaultLocalFont
 
 const queryLocalFonts = (window as unknown as { queryLocalFonts?: QueryLocalFonts }).queryLocalFonts
 if (!queryLocalFonts) {
-  localFontStatus.textContent = 'Local font list is available in Chrome/Edge.'
+  localFontStatus.textContent = m.localUnavailable
   if (localFontLoadBtn) {
     localFontLoadBtn.disabled = true
-    localFontLoadBtn.textContent = 'Unavailable'
+    localFontLoadBtn.textContent = m.unavailableBtn
   }
 }
 
@@ -233,11 +248,11 @@ async function ensureGoogleFonts() {
   googleFontsLoading = true
   if (googleFontLoadBtn) {
     googleFontLoadBtn.disabled = true
-    googleFontLoadBtn.textContent = 'Loading...'
+    googleFontLoadBtn.textContent = m.loadingBtn
   }
   if (googleFontStatus) {
     googleFontStatus.classList.remove('is-error')
-    googleFontStatus.textContent = 'Loading Google Fonts...'
+    googleFontStatus.textContent = m.googleLoadingStatus
   }
   try {
     const response = await fetch(GOOGLE_FONTS_URL)
@@ -251,20 +266,20 @@ async function ensureGoogleFonts() {
     syncGoogleFontOptions(googleOptions)
     googleFontsLoaded = true
     if (googleFontStatus) {
-      googleFontStatus.textContent = `Google fonts loaded (${fontGoogleSelect.options.length})`
+      googleFontStatus.textContent = m.googleLoadedStatus(fontGoogleSelect.options.length)
     }
     if (googleFontLoadBtn) {
-      googleFontLoadBtn.textContent = 'Loaded'
+      googleFontLoadBtn.textContent = m.loadedBtn
     }
   } catch (error) {
     console.warn('[visual-kerning] Failed to load Google Fonts list', error)
     if (googleFontStatus) {
-      googleFontStatus.textContent = 'Google font list failed to load.'
+      googleFontStatus.textContent = m.googleFailedStatus
       googleFontStatus.classList.add('is-error')
     }
     if (googleFontLoadBtn) {
       googleFontLoadBtn.disabled = false
-      googleFontLoadBtn.textContent = 'Load'
+      googleFontLoadBtn.textContent = m.loadBtn
     }
   } finally {
     googleFontsLoading = false
@@ -304,10 +319,10 @@ function syncLocalFontOptions(options: SelectOption[]) {
 async function ensureLocalFonts() {
   if (localFontsLoaded || localFontsLoading || !queryLocalFonts) return
   localFontsLoading = true
-  localFontStatus.textContent = 'Loading local fonts...'
+  localFontStatus.textContent = m.localLoadingStatus
   if (localFontLoadBtn) {
     localFontLoadBtn.disabled = true
-    localFontLoadBtn.textContent = 'Loading...'
+    localFontLoadBtn.textContent = m.loadingBtn
   }
   try {
     const fonts = await queryLocalFonts()
@@ -316,17 +331,17 @@ async function ensureLocalFonts() {
       text: font.fullName || font.family,
     }))
     syncLocalFontOptions([...baseLocalOptions, ...localOptions])
-    localFontStatus.textContent = `Local fonts loaded (${fontLocalSelect.options.length})`
+    localFontStatus.textContent = m.localLoadedStatus(fontLocalSelect.options.length)
     localFontsLoaded = true
     if (localFontLoadBtn) {
-      localFontLoadBtn.textContent = 'Loaded'
+      localFontLoadBtn.textContent = m.loadedBtn
     }
   } catch {
-    localFontStatus.textContent = 'Local font access was blocked.'
+    localFontStatus.textContent = m.localBlockedStatus
     localFontStatus.classList.add('is-error')
     if (localFontLoadBtn) {
       localFontLoadBtn.disabled = false
-      localFontLoadBtn.textContent = 'Load'
+      localFontLoadBtn.textContent = m.loadBtn
     }
   } finally {
     localFontsLoading = false
@@ -433,12 +448,10 @@ function updatePreviewStyle() {
   preview.style.fontFamily = `'${family}', ${source === 'google' ? 'sans-serif' : 'system-ui, sans-serif'}`
   preview.style.fontSize = `${size}px`
   preview.style.fontWeight = weight
-  const sourceLabel = source === 'google' ? 'Google Fonts' : 'Local Fonts'
-  setLuckyStatus(`${sourceLabel}: ${family}.`)
+  setLuckyStatus(m.fontStatusMsg(source, family))
 }
 
 function resetPreviewArea() {
-  // 既存のカーニング状態をリセットするため、エディタのareaを削除
   const areas = editor.plugin.areas.value
   for (const [selector, area] of areas) {
     if (area.el === preview) {
@@ -470,26 +483,24 @@ function setLuckyStatus(message: string, isError = false) {
 
 function getLuckyContext(): { fonts: string[]; text: string } | null {
   if (localFontsLoading) {
-    setLuckyStatus('Local fonts are loading...')
+    setLuckyStatus(m.localFontsLoadingMsg)
     return null
   }
   if (!localFontsLoaded) {
     setLuckyStatus(
-      queryLocalFonts
-        ? 'Load local fonts first (click Load).'
-        : 'Local font access is available in Chrome/Edge.',
+      queryLocalFonts ? m.loadLocalFirst : m.localAccessNote,
       true,
     )
     return null
   }
   const fonts = Array.from(fontLocalSelect.options).map(option => option.value).filter(Boolean)
   if (fonts.length === 0) {
-    setLuckyStatus('No local fonts available.', true)
+    setLuckyStatus(m.noLocalFonts, true)
     return null
   }
   const text = textInput.value
   if (!text) {
-    setLuckyStatus('Type some text first.', true)
+    setLuckyStatus(m.typeTextFirst, true)
     return null
   }
   return { fonts, text }
@@ -505,7 +516,7 @@ function applyLucky() {
   updateWeightUI()
   updatePreviewStyle()
   updatePreviewText()
-  setLuckyStatus(`Lucky font: ${font}.`)
+  setLuckyStatus(m.luckyFontMsg(font))
 }
 
 function applyMessy() {
@@ -524,7 +535,7 @@ function applyMessy() {
     fragment.append(span)
   }
   preview.replaceChildren(fragment)
-  setLuckyStatus('Messy feel applied.')
+  setLuckyStatus(m.messyApplied)
 }
 
 textInput.addEventListener('input', updatePreviewText)
@@ -592,7 +603,7 @@ if (resizeHandle) {
 const panel = document.querySelector('.visual-kerning-panel') as HTMLElement | null
 if (panel) {
   const dropOverlay = document.createElement('div')
-  dropOverlay.textContent = 'Drop JSON to import'
+  dropOverlay.textContent = m.dropOverlay
   Object.assign(dropOverlay.style, {
     display: 'none',
     position: 'absolute',
@@ -658,7 +669,6 @@ if (panel) {
 // Export HTML
 exportBtn.addEventListener('click', () => {
   const clone = preview.cloneNode(true) as HTMLElement
-  // visual-kerning の編集用クラスを除去
   clone.classList.remove(ACTIVE_CLASS, MODIFIED_CLASS, 'sandbox-preview')
   clone.querySelectorAll('[class]').forEach(el => {
     const classes = Array.from(el.classList).filter(c => !c.startsWith('visual-kerning-'))
@@ -671,12 +681,11 @@ exportBtn.addEventListener('click', () => {
 
   const { family, source } = getSelectedFont()
   const size = sizeInput.value
-  const weight = weightSelect.value
+  const weight = getWeightValue()
   const fallback = source === 'google' ? 'sans-serif' : 'system-ui, sans-serif'
   const style = `font-family:'${family}',${fallback}; font-size:${size}px; font-weight:${weight}; line-height:1.1;`
   clone.setAttribute('style', style + ' ' + (clone.getAttribute('style') || ''))
 
-  // span のインラインスタイルから letter-spacing:0em を除去（不要）
   clone.querySelectorAll(`span.${CHAR_CLASS}`).forEach(span => {
     span.style.removeProperty('letter-spacing')
     if (!span.getAttribute('style')?.trim()) span.removeAttribute('style')

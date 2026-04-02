@@ -120,6 +120,7 @@ function createCaption(ignoreAttr?: string): HTMLElement {
     fontFamily: "'Space Grotesk', -apple-system, sans-serif",
     fontSize: '15px',
     lineHeight: '1.6',
+    whiteSpace: 'pre-wrap',
     maxWidth: 'min(360px, calc(100vw - 24px))',
     boxShadow: '0 8px 32px rgba(0,0,0,0.28)',
     pointerEvents: 'auto',
@@ -293,11 +294,7 @@ function buildCaptionContent(caption: HTMLElement, stepNum: number, totalSteps: 
 
   for (const part of parts) {
     if (typeof part === 'string') {
-      if (part === '\n') {
-        caption.appendChild(document.createElement('br'))
-      } else {
-        caption.appendChild(document.createTextNode(part))
-      }
+      caption.appendChild(document.createTextNode(part))
     } else if ('kbd' in part) {
       const kbd = document.createElement('kbd')
       kbd.textContent = part.kbd

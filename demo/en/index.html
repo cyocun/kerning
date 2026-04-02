@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>visual kerning demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@100..900&family=Bungee&family=Rubik+Mono+One&family=Playfair+Display:wght@400..900&family=Cormorant+Garamond:wght@300;600&family=Space+Grotesk:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../shared.css" />
+  </head>
+  <body>
+    <nav class="top-nav" data-visual-kerning-ignore>
+      <div class="lang-toggle">
+        <a href="../en/" class="is-active" data-lang="en">EN</a>
+        <a href="../ja/" data-lang="ja">JA</a>
+      </div>
+      <a class="github-link" href="https://github.com/ie3jp/visual-kerning" target="_blank" rel="noopener" aria-label="View on GitHub">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+    </nav>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">Demo</p>
+          <h1 class="hero">VISUAL<br />KERNING</h1>
+          <p class="lede">Fine-tune letter spacing in the browser. Export as JSON, apply anywhere.</p>
+        </div>
+
+        <aside class="aside">
+          <h2>Try this page</h2>
+          <p>
+            The editor palette is visible on load. Click any text block, tweak spacing with
+            <code>Alt/Option + ←/→</code>, drag the palette, and collapse it with
+            <code>− / +</code>.
+          </p>
+        </aside>
+      </section>
+
+      <section class="sandbox" id="sandbox">
+        <div class="sandbox-header" data-visual-kerning-ignore>
+          <div class="sandbox-controls">
+            <div class="sandbox-row">
+              <label for="sb-font-google">Google Fonts</label>
+              <select id="sb-font-google"></select>
+              <button class="sandbox-btn sandbox-btn--ghost" id="sb-font-google-load" type="button">Load</button>
+            </div>
+            <div class="sandbox-row">
+              <label for="sb-font-local">Local Fonts</label>
+              <select id="sb-font-local"></select>
+              <button class="sandbox-btn sandbox-btn--ghost" id="sb-font-local-load" type="button">Load</button>
+            </div>
+            <span class="sandbox-note" id="sb-font-google-status">Click Load to fetch Google Fonts list.</span>
+            <span class="sandbox-note" id="sb-font-local-status">Click Load to scan local fonts.</span>
+            <div class="sandbox-row sandbox-row--metrics">
+              <label for="sb-size">Size</label>
+              <input type="number" id="sb-size" value="48" min="10" max="400" step="1" />
+              <span></span>
+              <label for="sb-weight">Weight</label>
+              <div class="sandbox-weight">
+                <select id="sb-weight">
+                  <option value="100">100</option>
+                  <option value="200">200</option>
+                  <option value="300">300</option>
+                  <option value="400" selected>400</option>
+                  <option value="500">500</option>
+                  <option value="600">600</option>
+                  <option value="700">700</option>
+                  <option value="800">800</option>
+                  <option value="900">900</option>
+                </select>
+                <div class="sandbox-weight-range" id="sb-weight-range-wrap" hidden>
+                  <input type="range" id="sb-weight-range" min="100" max="900" step="1" value="400" />
+                  <output id="sb-weight-output">400</output>
+                </div>
+              </div>
+              <span class="sandbox-row--metrics-spacer"></span>
+              <button class="sandbox-btn sandbox-btn--accent" id="sb-lucky" type="button">Lucky</button>
+              <button class="sandbox-btn sandbox-btn--accent" id="sb-messy" type="button">Messy</button>
+            </div>
+            <div class="sandbox-row sandbox-row--status">
+              <span class="sandbox-note" id="sb-lucky-status"></span>
+              <button class="sandbox-btn" id="sb-export">Export HTML</button>
+            </div>
+          </div>
+        </div>
+        <div class="sandbox-body-wrap">
+          <div class="sandbox-body" id="sb-body">
+            <textarea class="sandbox-textarea" id="sb-input" rows="2" placeholder="Type your text here…">Your Headline Here</textarea>
+            <p class="sandbox-preview" id="sb-preview">Your Headline Here</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2 class="bebas-hero" data-sizable style="--size: 175">AVATAR</h2>
+          <div class="card-footer" data-visual-kerning-ignore>
+            <p class="caption">Bebas Neue / display</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="40" max="300" value="175" /><output>175px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="bungee" data-sizable style="--size: 97"><span style="font-size: calc(var(--size) * 1.124px)">B</span><span style="font-size: calc(var(--size) * 0.753px)">L</span><span style="font-size: calc(var(--size) * 1.247px)">O</span><span style="font-size: calc(var(--size) * 0.567px)">C</span><span style="font-size: calc(var(--size) * 1px)">K</span><br /><span style="font-size: calc(var(--size) * 0.629px)">P</span><span style="font-size: calc(var(--size) * 0.876px)">A</span><span style="font-size: calc(var(--size) * 0.505px)">R</span><span style="font-size: calc(var(--size) * 1.062px)">T</span><span style="font-size: calc(var(--size) * 0.691px)">Y</span></h2>
+          <div class="card-footer" data-visual-kerning-ignore>
+            <p class="caption">Bungee / mixed size &amp; line-height</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="20" max="200" value="97" /><output>97px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="mixed-type" data-sizable style="--size: 72"><span class="mixed-bebas">M</span><span class="mixed-playfair">i</span><span class="mixed-inter">x</span><span class="mixed-bebas">E</span><span class="mixed-playfair">d</span> <span class="mixed-inter">T</span><span class="mixed-bebas">Y</span><span class="mixed-playfair">p</span><span class="mixed-inter">e</span><span class="mixed-bebas">S</span></p>
+          <div class="card-footer" data-visual-kerning-ignore>
+            <p class="caption">Bebas Neue + Playfair + Inter / mixed per character</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="20" max="200" value="72" /><output>72px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="playfair" data-sizable style="--size: 67">Typography<br />is atmosphere.</h2>
+          <div class="card-footer" data-visual-kerning-ignore>
+            <p class="caption">Playfair Display / editorial serif</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="20" max="200" value="67" /><output>67px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="cormorant" data-sizable style="--size: 60">The quick brown fox<br />jumps over the lazy dog</p>
+          <div class="card-footer" data-visual-kerning-ignore>
+            <p class="caption">Cormorant Garamond / light italic serif</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="16" max="160" value="60" /><output>60px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="rubik-mono" data-sizable style="--size: 42">HEAVY<br />MONO<br />WEIGHT</p>
+          <div class="card-footer" data-visual-kerning-ignore>
+            <p class="caption">Rubik Mono One / ultra-bold mono</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="14" max="120" value="42" /><output>42px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="variable-weight" data-sizable style="--size: 127"><span style="font-weight:900">V</span><span style="font-weight:100">A</span><span style="font-weight:800">R</span><span style="font-weight:100">I</span><span style="font-weight:900">A</span><span style="font-weight:100">B</span><span style="font-weight:700">L</span><span style="font-weight:100">E</span></p>
+          <div class="card-footer" data-visual-kerning-ignore>
+            <p class="caption">Inter Variable / weight 100→900</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="24" max="200" value="127" /><output>127px</output></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="noto-serif-jp" data-sizable style="--size: 48">あのイーハトーヴォのすきとおった風</p>
+          <div class="card-footer" data-visual-kerning-ignore>
+            <p class="caption">Noto Serif JP / 和文明朝</p>
+            <div class="card-size-slider"><label>Size</label><input type="range" min="16" max="120" value="48" /><output>48px</output></div>
+          </div>
+        </article>
+
+      </section>
+
+      <p class="hint">
+        Click a text block to start editing. Use <code>Tab</code> to move gaps, <code>B</code> to compare,
+        and <code>Cmd/Ctrl + K</code> if you want to toggle the editor.
+      </p>
+
+    </main>
+
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script type="module" src="../main.ts"></script>
+  </body>
+</html>

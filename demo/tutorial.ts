@@ -4,18 +4,14 @@
  */
 
 import type { TourStep } from './tour'
+import type { TutorialContent } from './locales/types'
 
 export const TUTORIAL_DONE_KEY = 'visual-kerning-tutorial-done'
 
 type OnEnable = (handler: () => void) => (() => void)
 
 const isMac = navigator.platform.includes('Mac')
-const altKey = isMac ? 'Option' : 'Alt'
-const cmdKLabel = isMac ? 'Cmd + K' : 'Ctrl + K'
 
-// --- デモ固有ヘルパー ---
-
-/** スムーズスクロールし scrollend を待つ。既にターゲット位置なら即 resolve。1.5s でタイムアウト。 */
 function smoothScrollTo(action: () => void, isAtTarget: () => boolean): Promise<void> {
   return new Promise<void>(resolve => {
     if (isAtTarget()) { resolve(); return }
@@ -36,7 +32,6 @@ export function simulateCmdK() {
   window.dispatchEvent(new KeyboardEvent('keyup', o))
 }
 
-/** 物理ベースの自由落下でファイルアイコンを落とすアニメーション (既存コードの移植) */
 function animateJsonDownload(anchor: HTMLElement): Promise<void> {
   const rect = anchor.getBoundingClientRect()
   const startX = rect.left + rect.width / 2 - 24
@@ -45,7 +40,6 @@ function animateJsonDownload(anchor: HTMLElement): Promise<void> {
   const icon = document.createElement('div')
   icon.setAttribute('data-visual-kerning-ignore', 'true')
 
-  // SVG はハードコードされた静的リテラル（ユーザー入力なし）
   const parser = new DOMParser()
   const svgDoc = parser.parseFromString(
     '<svg width="48" height="60" viewBox="0 0 48 60" fill="none" xmlns="http://www.w3.org/2000/svg">'
@@ -102,10 +96,10 @@ function animateJsonDownload(anchor: HTMLElement): Promise<void> {
 
 const TARGET_TEXT = '.card:first-child [data-sizable]'
 
-export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
+export function buildTutorialSteps(onEnable: OnEnable, t: TutorialContent): TourStep[] {
   let enabledPromise: Promise<void>
   return [
-    // Step 0: イントロ — ページ上部でツアーの導入
+    // Step 0: イントロ
     {
       actions: [
         { type: 'run', fn: () => smoothScrollTo(
@@ -113,11 +107,7 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
           () => window.scrollY === 0,
         )},
         { type: 'overlay', visible: true },
-        { type: 'caption-center', content: [
-          'Welcome to ', { strong: 'visual-kerning' }, '!',
-          '\n',
-          'Let\'s see how to fine-tune letter spacing in the browser.',
-        ]},
+        { type: 'caption-center', content: t.welcome },
         { type: 'wait', ms: 4000 },
       ],
     },
@@ -125,9 +115,7 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
     // Step 1: Cmd+K でエディタを起動
     {
       actions: [
-        { type: 'caption-center', content: [
-          'Press ', { key: 'cmd', label: isMac ? '\u2318' : 'Ctrl' }, ' + ', { key: 'k', label: 'K' }, ' to open the editor palette.',
-        ]},
+        { type: 'caption-center', content: t.openEditor },
         { type: 'wait', ms: 1800 },
         { type: 'run', fn: () => { enabledPromise = new Promise<void>(r => { const d = onEnable(() => { d(); r() }) }) }},
         { type: 'key', key: 'k', code: 'KeyK', modifiers: { metaKey: isMac, ctrlKey: !isMac }, highlight: ['cmd', 'k'] },
@@ -150,7 +138,7 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
           )
         }},
         { type: 'spotlight-teleport', target: TARGET_TEXT },
-        { type: 'caption', target: TARGET_TEXT, position: 'bottom', content: ['Clicking a text block to start editing...'], instant: true },
+        { type: 'caption', target: TARGET_TEXT, position: 'bottom', content: [t.clickToEdit], instant: true },
         { type: 'wait', ms: 1500 },
         { type: 'run', fn: (ctx) => {
           const el = document.querySelector(TARGET_TEXT) as HTMLElement | null
@@ -175,10 +163,7 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
     {
       actions: [
         { type: 'spotlight-move', target: TARGET_TEXT },
-        { type: 'caption', target: TARGET_TEXT, position: 'bottom', content: [
-          'Move ', { key: 'nav-left', label: '\u2190' }, ' ', { key: 'nav-right', label: '\u2192' },
-          '   Adjust ', { key: 'adj-mod', label: altKey }, ' + ', { key: 'adj-left', label: '\u2190' }, ' ', { key: 'adj-right', label: '\u2192' },
-        ]},
+        { type: 'caption', target: TARGET_TEXT, position: 'bottom', content: t.moveAdjust },
         { type: 'wait', ms: 800 },
         { type: 'key', key: 'ArrowLeft', code: 'ArrowLeft', highlight: ['nav-left'] },
         { type: 'wait', ms: 400 },
@@ -193,13 +178,15 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
       ],
     },
 
-    // Step 4: Before/After (Compare) を試す
+    // Step 4: Before/After
     {
       actions: [
         { type: 'spotlight-move', target: '.js-compare', pad: 6 },
         { type: 'highlight', target: '.js-compare' },
         { type: 'caption', target: '.js-compare', position: 'left', content: [
-          { strong: 'Before / After' }, ' \u2014 toggle to compare with the original spacing.',
+          { strong: t.compareTitle },
+          '\n',
+          t.compareDesc,
         ]},
         { type: 'wait', ms: 1500 },
         { type: 'click', target: '.js-compare' },
@@ -209,7 +196,7 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
       ],
     },
 
-    // Step 5: Guides を試す
+    // Step 5: Guides
     {
       actions: [
         { type: 'spotlight-transition', duration: '0.15s', easing: 'ease' },
@@ -218,7 +205,9 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
         { type: 'spotlight-transition', duration: '0.4s', easing: 'cubic-bezier(0.4, 0, 0.2, 1)' },
         { type: 'highlight', target: '.js-gaps' },
         { type: 'caption', target: '.js-gaps', position: 'left', content: [
-          { strong: 'Guides' }, ' \u2014 show spacing markers between characters.',
+          { strong: t.guidesTitle },
+          '\n',
+          t.guidesDesc,
         ]},
         { type: 'wait', ms: 1500 },
         { type: 'click', target: '.js-gaps' },
@@ -228,16 +217,18 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
       ],
     },
 
-    // Step 6: Export で JSON を書き出し
+    // Step 6: Export
     {
       actions: [
         { type: 'spotlight-transition', duration: '0.15s', easing: 'ease' },
         { type: 'spotlight-move', target: '.js-export', pad: 6 },
         { type: 'highlight', target: '.js-export' },
         { type: 'caption', target: '.js-export', position: 'left', content: [
-          { strong: 'Export' }, ' \u2014 copies kerning data as JSON.',
+          { strong: t.exportTitle },
           '\n',
-          'Apply it with the visual-kerning library and you\'re done!',
+          t.exportDesc1,
+          '\n',
+          t.exportDesc2,
         ]},
         { type: 'wait', ms: 1500 },
         { type: 'run', fn: async () => {
@@ -248,14 +239,16 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
       ],
     },
 
-    // Step 7: Reset で元に戻す
+    // Step 7: Reset
     {
       actions: [
         { type: 'spotlight-transition', duration: '0.15s', easing: 'ease' },
         { type: 'spotlight-move', target: '.js-reset', pad: 6 },
         { type: 'highlight', target: '.js-reset' },
         { type: 'caption', target: '.js-reset', position: 'left', content: [
-          { strong: 'Reset' }, ' \u2014 discard all changes and restore original spacing.',
+          { strong: t.resetTitle },
+          '\n',
+          t.resetDesc,
         ]},
         { type: 'wait', ms: 1500 },
         { type: 'run', fn: () => {
@@ -284,13 +277,7 @@ export function buildTutorialSteps(onEnable: OnEnable): TourStep[] {
           )
         }},
         { type: 'spotlight-teleport', target: '#sandbox', pad: 8 },
-        { type: 'caption-center', content: [
-          'Your turn!',
-          '\n',
-          'Pick a font, type some text,',
-          '\n',
-          'and try kerning it yourself.',
-        ]},
+        { type: 'caption-center', content: t.yourTurn },
         { type: 'wait', ms: 4000 },
       ],
     },
