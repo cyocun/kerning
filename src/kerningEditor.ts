@@ -557,8 +557,9 @@ export function createKerningPlugin(): KerningEditorPlugin {
 
       const bounds = getSelectionBounds()
       if (bounds) {
-        // 範囲選択: 全ギャップを同量調整（トラッキング）
-        for (let i = bounds[0]; i <= bounds[1]; i++) {
+        // 範囲選択: 内側ギャップのみ同量調整（トラッキング）
+        // bounds[0] は選択外との左端エッジなのでスキップ
+        for (let i = bounds[0] + 1; i <= bounds[1]; i++) {
           if (i === -1) {
             area.indent += delta
           } else {
