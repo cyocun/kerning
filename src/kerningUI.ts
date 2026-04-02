@@ -42,9 +42,45 @@ function mergeSelectionRects(rects: { x: number; y: number; h: number }[]): Merg
 }
 
 export interface KerningEditorOptions {
+  /** UI language for the editor palette (default: `'en'`). */
   locale?: EditorLocale
+  /**
+   * Show the editing UI with keyboard shortcuts (default: `true`).
+   *
+   * - `true` — editing mode (development / staging).
+   * - `false` — production mode, applies kerning data only.
+   */
   editable?: boolean
+  /**
+   * Kerning data to apply on mount.
+   *
+   * In editing mode (`editable: true`), the data seeds the editor state
+   * so you can continue editing from a previous export.
+   * In production mode (`editable: false`), the data is applied to the DOM directly.
+   */
   kerning?: KerningExport
+  /**
+   * Add screen reader support (default: `false`).
+   *
+   * When enabled, each target element is restructured into:
+   * ```html
+   * <h1>
+   *   <span class="visual-kerning-sr-only">original text</span>
+   *   <span class="visual-kerning-visual" aria-hidden="true">
+   *     ...kerned spans...
+   *   </span>
+   * </h1>
+   * ```
+   * Screen readers read the visually-hidden original text;
+   * the per-character spans are hidden via `aria-hidden`.
+   *
+   * **Note:** This changes the DOM structure. CSS or JS that references
+   * child elements of kerning targets directly may need selector adjustments.
+   *
+   * Only applies in production mode (`editable: false`).
+   * Ignored when editing.
+   */
+  accessible?: boolean
 }
 
 export interface KerningEditor extends KerningEditorPlugin {
@@ -337,7 +373,7 @@ export function createKerningEditor(options: KerningEditorOptions = {}): Kerning
       }
       pendingDomReady = null
       if (!editable) {
-        if (options.kerning) applyKerning(options.kerning)
+        if (options.kerning) applyKerning(options.kerning, { accessible: options.accessible })
         return
       }
       if (mounted) return

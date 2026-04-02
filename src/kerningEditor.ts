@@ -2,6 +2,9 @@
  * Kerning Editor — ブラウザ上でペアカーニングを直接調整するツール。
  */
 import {
+  ACTIVE_CLASS,
+  CHAR_CLASS,
+  MODIFIED_CLASS,
   applyKerningToSpans,
   collectKerningText,
   extractKerningFromWrapped,
@@ -69,10 +72,8 @@ export interface KerningEditorEventMap {
 
 export interface KerningEventEmitter extends TypedEventEmitter<KerningEditorEventMap> {}
 
+export { ACTIVE_CLASS, CHAR_CLASS, MODIFIED_CLASS } from './applyKerning'
 export const OVERLAY_CLASS = 'visual-kerning-overlay'
-export const CHAR_CLASS = 'visual-kerning-char'
-export const ACTIVE_CLASS = 'visual-kerning-active'
-export const MODIFIED_CLASS = 'visual-kerning-modified'
 
 export interface KerningEditorArea {
   selector: string

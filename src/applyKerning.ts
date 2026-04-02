@@ -39,6 +39,57 @@ export interface WrappedTextResult {
   brPositions: number[]
 }
 
+// ---------------------------------------------------------------------------
+// CSS classes — DOM に付与されるクラス名
+// ---------------------------------------------------------------------------
+
+/** Class added to each per-character `<span>`. */
+export const CHAR_CLASS = 'visual-kerning-char'
+/** Class for the visually-hidden original text element (only with `accessible: true`). */
+export const SR_ONLY_CLASS = 'visual-kerning-sr-only'
+/** Class for the `aria-hidden` wrapper around kerned spans (only with `accessible: true`). */
+export const VISUAL_CLASS = 'visual-kerning-visual'
+/** Class added to the target element while it is being edited. */
+export const ACTIVE_CLASS = 'visual-kerning-active'
+/** Class added to the target element after kerning has been applied. */
+export const MODIFIED_CLASS = 'visual-kerning-modified'
+
+/**
+ * accessible: true のときに使う visually-hidden + aria-hidden の構造を生成する。
+ * 元テキストを SR に読ませ、span群は aria-hidden で隠す。
+ */
+function wrapAccessible(el: HTMLElement, originalText: string): void {
+  const srText = document.createElement('span')
+  srText.className = SR_ONLY_CLASS
+  // inline style as CSP fallback — ensures text stays hidden even if <style> injection fails
+  Object.assign(srText.style, {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    overflow: 'hidden',
+    clip: 'rect(0,0,0,0)',
+    whiteSpace: 'nowrap',
+  })
+  srText.textContent = originalText.replace(/\n/g, ' ')
+
+  const visual = document.createElement('span')
+  visual.className = VISUAL_CLASS
+  visual.setAttribute('aria-hidden', 'true')
+
+  while (el.firstChild) visual.appendChild(el.firstChild)
+
+  el.appendChild(srText)
+  el.appendChild(visual)
+
+  // SR用CSSを注入（1回だけ）
+  if (!document.getElementById('visual-kerning-sr-style')) {
+    const style = document.createElement('style')
+    style.id = 'visual-kerning-sr-style'
+    style.textContent = `.${SR_ONLY_CLASS}{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}`
+    document.head.appendChild(style)
+  }
+}
+
 function readKerningLength(value?: string): number | null {
   const raw = value?.trim()
   if (!raw) return null
@@ -234,9 +285,9 @@ export function wrapTextWithKerning(
   el: HTMLElement,
   text: string,
   kerning: number[],
-  options: { indent?: number; spanClassName?: string } = {},
+  options: { indent?: number; spanClassName?: string; accessible?: boolean } = {},
 ): WrappedTextResult {
-  const { indent = 0, spanClassName } = options
+  const { indent = 0, spanClassName, accessible = false } = options
   const normalizedKerning = normalizeKerningForText(kerning, text)
 
   while (el.firstChild) el.removeChild(el.firstChild)
@@ -261,6 +312,9 @@ export function wrapTextWithKerning(
   }
 
   applyKerningToSpans(spans, normalizedKerning, indent)
+
+  if (accessible) wrapAccessible(el, text)
+
   return { spans, brPositions }
 }
 
@@ -271,9 +325,9 @@ export function wrapTextWithKerning(
 export function wrapElementWithKerning(
   el: HTMLElement,
   kerning: number[],
-  options: { indent?: number; spanClassName?: string } = {},
+  options: { indent?: number; spanClassName?: string; accessible?: boolean } = {},
 ): WrappedTextResult {
-  const { indent = 0, spanClassName } = options
+  const { indent = 0, spanClassName, accessible = false } = options
   const spans: HTMLElement[] = []
   const brPositions: number[] = []
   let pendingSpace = false
@@ -325,8 +379,14 @@ export function wrapElementWithKerning(
     }
   }
 
+  // accessible用: wrap前に元テキストを取得（wrap後はspan化されて取れない）
+  const originalText = accessible ? collectKerningText(el) : ''
+
   wrapChildren(el)
   applyKerningToSpans(spans, normalizeKerning(kerning, spans.length), indent)
+
+  if (accessible) wrapAccessible(el, originalText)
+
   return { spans, brPositions }
 }
 
@@ -358,21 +418,28 @@ export function collectKerningText(node: Node): string {
 }
 
 /**
- * カーニングJSONをDOMに適用する。
+ * Apply kerning JSON to the DOM.
  *
- * 対象要素のテキストを1文字ずつspanで分割し、
- * 各spanの margin-right / margin-left にギャップ量を設定する。
- * 既に1文字spanで分割済みの要素はそのまま値を適用する。
+ * Wraps each visible character in a `<span>` and sets `margin-left`
+ * on each span. If the element is already span-wrapped, kerning values
+ * are updated in place.
  *
- * @param data - カーニングJSON
- * @param options.warnMissing - セレクタ不一致時にconsole.warnを出す（default: true）
+ * @param data - Kerning JSON export data.
+ * @param options.warnMissing - Log warnings when selectors don't match (default: `true`).
+ * @param options.accessible - Add screen reader support (default: `false`).
+ *   When enabled, each target element is restructured into:
+ *   `<span class="visual-kerning-sr-only">original text</span>` +
+ *   `<span class="visual-kerning-visual" aria-hidden="true">...kerned spans...</span>`.
+ *   Screen readers read the hidden original text; the per-character spans are ignored.
+ *   This changes the DOM structure — CSS/JS that references child elements directly
+ *   may need selector adjustments.
  */
 export function applyKerning(
   data: KerningExport,
-  options: { warnMissing?: boolean } = {},
+  options: { warnMissing?: boolean; accessible?: boolean } = {},
 ) {
   assertValidKerningExport(data)
-  const { warnMissing = true } = options
+  const { warnMissing = true, accessible = false } = options
 
   if (warnMissing && data.version !== undefined && data.version > KERNING_FORMAT_VERSION) {
     console.warn(
@@ -394,6 +461,18 @@ export function applyKerning(
       )
     }
 
+    // accessible構造が既にある場合は剥がしてから再適用
+    const existingSrOnly = el.querySelector(`:scope > .${SR_ONLY_CLASS}`)
+    if (existingSrOnly) {
+      const existingVisual = el.querySelector(`:scope > .${VISUAL_CLASS}`)
+      existingSrOnly.remove()
+      if (existingVisual) {
+        // ラッパー内の子要素を親に戻す
+        while (existingVisual.firstChild) el.appendChild(existingVisual.firstChild)
+        existingVisual.remove()
+      }
+    }
+
     // 既に1文字spanで分割済みか判定
     const wrappedSpans = getSingleCharSpans(el)
 
@@ -406,6 +485,8 @@ export function applyKerning(
         normalizeKerning(area.kerning, wrappedSpans.length),
         area.indent ?? 0,
       )
+      // 既存span化済みでもaccessible構造を追加
+      if (accessible) wrapAccessible(el, area.text)
     } else {
       const text = collectKerningText(el)
       if (text !== area.text && warnMissing) {
@@ -415,7 +496,7 @@ export function applyKerning(
       if (warnMissing && area.kerning.length !== normalizedKerning.length) {
         warnKerningLengthMismatch(area.selector, normalizedKerning.length, area.kerning.length)
       }
-      wrapElementWithKerning(el, normalizedKerning, { indent: area.indent ?? 0 })
+      wrapElementWithKerning(el, normalizedKerning, { indent: area.indent ?? 0, spanClassName: CHAR_CLASS, accessible })
     }
   }
 }

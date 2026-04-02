@@ -23,6 +23,7 @@ interface KerningEditorOptions {
   editable?: boolean      // true = editing UI, false = apply only (default: true)
   kerning?: KerningExport // kerning data to apply on mount
   locale?: 'en' | 'ja'   // UI language (default: 'en')
+  accessible?: boolean    // screen reader support (default: false)
 }
 ```
 
@@ -109,6 +110,23 @@ When multiple gaps are selected, Alt + Arrow adjusts all at once (tracking).
 ## HTML attributes
 
 - `data-visual-kerning-ignore`: add to any element to exclude it from editing
+
+## Accessibility
+
+With `accessible: true`, each target element gets:
+- A visually-hidden `<span class="visual-kerning-sr-only">` with the original text
+- An `<span class="visual-kerning-visual" aria-hidden="true">` wrapper around the kerned spans
+
+Screen readers read the hidden original text; the per-character spans are ignored.
+Only applies in production mode (`editable: false`). DOM structure changes — adjust CSS selectors if needed.
+
+## CSS classes
+
+- `visual-kerning-char`: each character span (always present on kerned characters)
+- `visual-kerning-sr-only`: visually-hidden original text (accessible: true only)
+- `visual-kerning-visual`: wrapper around kerned spans with aria-hidden (accessible: true only)
+- `visual-kerning-active`: target element while being edited
+- `visual-kerning-modified`: target element after kerning is applied
 
 ## Key facts
 

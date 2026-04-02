@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest'
 import * as api from '../../src/index'
 
 describe('public API surface', () => {
-  it('exposes only the editor runtime entry point', () => {
-    expect(Object.keys(api).sort()).toEqual(['createKerningEditor'])
+  it('exposes the editor entry point and CSS class constants', () => {
+    expect(Object.keys(api).sort()).toEqual([
+      'ACTIVE_CLASS',
+      'CHAR_CLASS',
+      'MODIFIED_CLASS',
+      'SR_ONLY_CLASS',
+      'VISUAL_CLASS',
+      'createKerningEditor',
+    ])
   })
 })

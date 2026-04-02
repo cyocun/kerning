@@ -229,6 +229,137 @@ describe('applyKerning helpers', () => {
     warn.mockRestore()
   })
 
+  it('accessible option adds visually-hidden text and aria-hidden wrapper', () => {
+    const el = document.createElement('h1')
+    el.textContent = 'HELLO'
+    wrapTextWithKerning(el, 'HELLO', [0, 0, 0, 0], { accessible: true })
+
+    const srOnly = el.querySelector('.visual-kerning-sr-only') as HTMLElement
+    expect(srOnly).not.toBeNull()
+    expect(srOnly.textContent).toBe('HELLO')
+
+    const ariaHidden = el.querySelector('[aria-hidden="true"]') as HTMLElement
+    expect(ariaHidden).not.toBeNull()
+    expect(ariaHidden.querySelectorAll('span')).toHaveLength(5)
+  })
+
+  it('accessible option works with wrapElementWithKerning preserving inline markup', () => {
+    const el = document.createElement('h1')
+    const em = document.createElement('em')
+    em.textContent = 'E'
+    el.append('H', em, 'LLO')
+    wrapElementWithKerning(el, [0, 0, 0, 0], { accessible: true })
+
+    const srOnly = el.querySelector('.visual-kerning-sr-only') as HTMLElement
+    expect(srOnly).not.toBeNull()
+    expect(srOnly.textContent).toBe('HELLO')
+
+    const ariaHidden = el.querySelector('[aria-hidden="true"]') as HTMLElement
+    expect(ariaHidden).not.toBeNull()
+    expect(ariaHidden.querySelector('em')).not.toBeNull()
+  })
+
+  it('accessible option defaults to false (no extra DOM)', () => {
+    const el = document.createElement('p')
+    wrapTextWithKerning(el, 'AB', [0], {})
+
+    expect(el.querySelector('.visual-kerning-sr-only')).toBeNull()
+    expect(el.querySelector('[aria-hidden="true"]')).toBeNull()
+  })
+
+  it('applyKerning passes accessible option to wrapElementWithKerning', () => {
+    const host = document.createElement('div')
+    const p = document.createElement('p')
+    p.id = 'a11y-test'
+    p.textContent = 'Hello'
+    host.appendChild(p)
+    document.body.appendChild(host)
+
+    const data: KerningExport = {
+      exported: new Date().toISOString(),
+      page: '/',
+      areas: [{
+        selector: '#a11y-test',
+        text: 'Hello',
+        font: { family: 'sans', weight: '400', size: '16px' },
+        kerning: [0, 0, 0, 0],
+      }],
+    }
+    applyKerning(data, { accessible: true })
+
+    const target = document.querySelector('#a11y-test') as HTMLElement
+    expect(target.querySelector('.visual-kerning-sr-only')).not.toBeNull()
+    expect(target.querySelector('[aria-hidden="true"]')).not.toBeNull()
+    host.remove()
+  })
+
+  it('applyKerning with accessible is idempotent on double call', () => {
+    const host = document.createElement('div')
+    const p = document.createElement('p')
+    p.id = 'idempotent-test'
+    p.textContent = 'Hello'
+    host.appendChild(p)
+    document.body.appendChild(host)
+
+    const data: KerningExport = {
+      exported: new Date().toISOString(),
+      page: '/',
+      areas: [{
+        selector: '#idempotent-test',
+        text: 'Hello',
+        font: { family: 'sans', weight: '400', size: '16px' },
+        kerning: [0, 0, 0, 0],
+      }],
+    }
+    applyKerning(data, { accessible: true })
+    applyKerning(data, { accessible: true })
+
+    const target = document.querySelector('#idempotent-test') as HTMLElement
+    expect(target.querySelectorAll('.visual-kerning-sr-only')).toHaveLength(1)
+    expect(target.querySelectorAll('[aria-hidden="true"]')).toHaveLength(1)
+    host.remove()
+  })
+
+  it('accessible works on already-span-wrapped elements', () => {
+    const host = document.createElement('div')
+    const p = document.createElement('p')
+    p.id = 'prewrapped-test'
+    // 手動でspan化済みの状態を作る
+    for (const ch of 'Hi') {
+      const span = document.createElement('span')
+      span.textContent = ch
+      p.appendChild(span)
+    }
+    host.appendChild(p)
+    document.body.appendChild(host)
+
+    const data: KerningExport = {
+      exported: new Date().toISOString(),
+      page: '/',
+      areas: [{
+        selector: '#prewrapped-test',
+        text: 'Hi',
+        font: { family: 'sans', weight: '400', size: '16px' },
+        kerning: [50],
+      }],
+    }
+    applyKerning(data, { accessible: true })
+
+    const target = document.querySelector('#prewrapped-test') as HTMLElement
+    expect(target.querySelector('.visual-kerning-sr-only')).not.toBeNull()
+    expect(target.querySelector('[aria-hidden="true"]')).not.toBeNull()
+    host.remove()
+  })
+
+  it('accessible normalizes newlines to spaces in SR text', () => {
+    const el = document.createElement('h1')
+    wrapTextWithKerning(el, 'A\nV', [0], { accessible: true })
+
+    const srOnly = el.querySelector('.visual-kerning-sr-only') as HTMLElement
+    expect(srOnly).not.toBeNull()
+    expect(srOnly.textContent).toBe('A V')
+  })
+
   it('applyKerning throws for invalid payloads', () => {
     expect(() => applyKerning({
       exported: new Date().toISOString(),

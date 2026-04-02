@@ -123,12 +123,14 @@ const editor = createKerningEditor({
   locale: 'en',          // 'ja' | 'en'（デフォルト: 'en'）
   editable: true,        // 編集UIを表示する（デフォルト: true）
   kerning: kerningData,  // mount 時に適用する KerningExport データ
+  accessible: false,     // スクリーンリーダー対応（デフォルト: false）
 })
 editor.mount()
 ```
 
 - `editable: true`（デフォルト）— 編集UI + キーボードショートカット
 - `editable: false` + `kerning` — 本番モード。カーニングデータの適用のみ
+- `accessible: true` — スクリーンリーダー対応を有効化（[アクセシビリティ](#アクセシビリティ)参照）
 - `mount()` / `unmount()` — DOM への接続・切断
 
 `kerning` に渡す `KerningExport` が、公開されているデータ型です。
@@ -208,6 +210,73 @@ visual-kerning は各文字を `<span>` で囲み、
   `margin` は `letter-spacing` と独立している。
   親に指定された `letter-spacing` はライブラリ側が読み取り、
   `calc()` で margin に加算して継承する。
+
+## アクセシビリティ
+
+visual-kerning は各文字を `<span>` で分割するため、
+スクリーンリーダーがテキストを1文字ずつ読み上げてしまう可能性があります。
+
+これを防ぐには、本番モードで `accessible` オプションを有効にしてください:
+
+```ts
+const editor = createKerningEditor({
+  editable: false,
+  kerning: kerningData,
+  accessible: true,
+})
+editor.mount()
+```
+
+有効にすると、対象要素のDOM構造が以下のように変換されます:
+
+```html
+<!-- accessible なし -->
+<h1>
+  <span class="visual-kerning-char" style="margin-left:...">H</span>
+  <span class="visual-kerning-char" style="margin-left:...">e</span>
+  ...
+</h1>
+
+<!-- accessible: true -->
+<h1>
+  <span class="visual-kerning-sr-only">Hello</span>
+  <span class="visual-kerning-visual" aria-hidden="true">
+    <span class="visual-kerning-char" style="margin-left:...">H</span>
+    <span class="visual-kerning-char" style="margin-left:...">e</span>
+    ...
+  </span>
+</h1>
+```
+
+スクリーンリーダーは visually-hidden な元テキストを読み上げ、
+カーニング済みのspan群は `aria-hidden` で無視されます。
+
+> **注意:** DOM構造が変わるため、カーニング対象要素の子要素を直接参照する
+> CSSやJSがある場合はセレクタの調整が必要になることがあります。
+
+## CSSクラス
+
+visual-kerning がDOMに付与するクラス一覧:
+
+| クラス | 付与先 | 説明 |
+|-------|--------|------|
+| `visual-kerning-char` | 各文字の `<span>` | カーニング対象の文字に常に付与 |
+| `visual-kerning-sr-only` | visually-hidden テキスト | `accessible: true` 時のみ — 元テキストを保持 |
+| `visual-kerning-visual` | カーニング済みspanのラッパー | `accessible: true` 時のみ — `aria-hidden="true"` |
+| `visual-kerning-active` | 対象要素 | 編集中のテキストブロックに付与 |
+| `visual-kerning-modified` | 対象要素 | カーニングが適用されたブロックに付与 |
+
+```css
+/* 例: カーニング済み文字のスタイル */
+.visual-kerning-char {
+  /* 各文字span */
+}
+
+/* 例: accessible有効時のビジュアルラッパー */
+.visual-kerning-visual {
+  /* カーニング済みspan群を囲む。スクリーンリーダーからは隠される */
+}
+```
 
 ## 制限事項
 

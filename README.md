@@ -123,12 +123,14 @@ const editor = createKerningEditor({
   locale: 'en',          // 'ja' | 'en' (default: 'en')
   editable: true,        // show editing UI (default: true)
   kerning: kerningData,  // apply KerningExport on mount
+  accessible: false,     // screen reader support (default: false)
 })
 editor.mount()
 ```
 
 - `editable: true` (default) — editing UI + keyboard shortcuts
 - `editable: false` + `kerning` — production mode, applies kerning data only
+- `accessible: true` — adds screen reader support (see [Accessibility](#accessibility))
 - `mount()` / `unmount()` — attach / detach from the DOM
 
 `KerningExport` is the public data shape used by the `kerning` option.
@@ -208,6 +210,74 @@ This is a deliberate choice over `letter-spacing`:
   If the parent element has `letter-spacing`, `margin-left` doesn't interfere.
   The library reads the inherited value
   and includes it in the margin calculation via `calc()`.
+
+## Accessibility
+
+visual-kerning wraps each character in a `<span>`,
+which can cause screen readers to read text one character at a time.
+
+To prevent this, enable the `accessible` option in production mode:
+
+```ts
+const editor = createKerningEditor({
+  editable: false,
+  kerning: kerningData,
+  accessible: true,
+})
+editor.mount()
+```
+
+When enabled, each target element is restructured:
+
+```html
+<!-- Before (without accessible) -->
+<h1>
+  <span class="visual-kerning-char" style="margin-left:...">H</span>
+  <span class="visual-kerning-char" style="margin-left:...">e</span>
+  ...
+</h1>
+
+<!-- After (with accessible: true) -->
+<h1>
+  <span class="visual-kerning-sr-only">Hello</span>
+  <span class="visual-kerning-visual" aria-hidden="true">
+    <span class="visual-kerning-char" style="margin-left:...">H</span>
+    <span class="visual-kerning-char" style="margin-left:...">e</span>
+    ...
+  </span>
+</h1>
+```
+
+Screen readers read the visually-hidden original text,
+while the kerned spans are hidden via `aria-hidden`.
+
+> **Note:** This changes the DOM structure.
+> If your CSS or JS references child elements of kerning targets directly,
+> selectors may need adjustment.
+
+## CSS classes
+
+visual-kerning adds these classes to the DOM for styling and selection:
+
+| Class | Applied to | Description |
+|-------|-----------|-------------|
+| `visual-kerning-char` | Each character `<span>` | Always present on kerned characters |
+| `visual-kerning-sr-only` | Visually-hidden text | Only with `accessible: true` — contains the original readable text |
+| `visual-kerning-visual` | Wrapper around kerned spans | Only with `accessible: true` — has `aria-hidden="true"` |
+| `visual-kerning-active` | Target element | Added while the element is being edited |
+| `visual-kerning-modified` | Target element | Added when kerning has been applied |
+
+```css
+/* Example: style kerned characters */
+.visual-kerning-char {
+  /* each character span */
+}
+
+/* Example: target the visual wrapper when accessible is enabled */
+.visual-kerning-visual {
+  /* wraps all kerned spans, hidden from screen readers */
+}
+```
 
 ## Limitations
 
