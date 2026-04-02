@@ -925,3 +925,15 @@ code {
     grid-template-columns: 1fr;
   }
 }
+
+.site-footer {
+  text-align: center;
+  padding: 24px 0;
+  font-size: 12px;
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.site-footer p {
+  margin: 0;
+}
