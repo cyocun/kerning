@@ -206,7 +206,7 @@
           <pre class="install-panel" data-tab="yarn"><code><span class="sh-cmd">yarn add</span> <span class="sh-pkg">visual-kerning</span></code></pre>
           <pre class="install-panel" data-tab="pnpm"><code><span class="sh-cmd">pnpm add</span> <span class="sh-pkg">visual-kerning</span></code></pre>
           <pre class="install-panel" data-tab="cdn"><code><span class="sh-tag">&lt;script</span> <span class="sh-attr">type</span>=<span class="sh-str">"module"</span><span class="sh-tag">&gt;</span>
-  <span class="sh-kw">import</span> { <span class="sh-fn">createKerningEditor</span> } <span class="sh-kw">from</span>
+  <span class="sh-kw">import</span> { <span class="sh-fn">visualKerning</span> } <span class="sh-kw">from</span>
     <span class="sh-str">'https://esm.sh/visual-kerning@0.11.0'</span>
 <span class="sh-tag">&lt;/script&gt;</span></code></pre>
         </div>
@@ -215,14 +215,14 @@
         <div class="for-engineers-usage" data-usage="pkg">
           <div class="for-engineers-usage-step">
             <p class="for-engineers-usage-label">開発・ステージング環境で編集</p>
-            <pre class="install-panel is-active"><code><span class="sh-kw">import</span> { <span class="sh-fn">createKerningEditor</span> } <span class="sh-kw">from</span> <span class="sh-str">'visual-kerning'</span>
+            <pre class="install-panel is-active"><code><span class="sh-kw">import</span> { <span class="sh-fn">visualKerning</span> } <span class="sh-kw">from</span> <span class="sh-str">'visual-kerning'</span>
 
-<span class="sh-kw">const</span> editor = <span class="sh-fn">createKerningEditor</span>({ <span class="sh-attr">editable</span>: <span class="sh-kw">true</span> })
+<span class="sh-kw">const</span> editor = <span class="sh-fn">visualKerning</span>({ <span class="sh-attr">editable</span>: <span class="sh-kw">true</span> })
 editor.<span class="sh-fn">mount</span>()</code></pre>
           </div>
           <div class="for-engineers-usage-step">
             <p class="for-engineers-usage-label">本番環境で適用</p>
-            <pre class="install-panel is-active"><code><span class="sh-kw">const</span> editor = <span class="sh-fn">createKerningEditor</span>({
+            <pre class="install-panel is-active"><code><span class="sh-kw">const</span> editor = <span class="sh-fn">visualKerning</span>({
   <span class="sh-attr">editable</span>: <span class="sh-kw">false</span>,
   <span class="sh-attr">kerning</span>: kerningData
 })
@@ -233,20 +233,24 @@ editor.<span class="sh-fn">mount</span>()</code></pre>
           <div class="for-engineers-usage-step">
             <p class="for-engineers-usage-label">開発・ステージング環境で編集</p>
             <pre class="install-panel is-active"><code><span class="sh-tag">&lt;script</span> <span class="sh-attr">type</span>=<span class="sh-str">"module"</span><span class="sh-tag">&gt;</span>
-<span class="sh-kw">import</span> { <span class="sh-fn">createKerningEditor</span> } <span class="sh-kw">from</span>
+<span class="sh-kw">import</span> { <span class="sh-fn">visualKerning</span> } <span class="sh-kw">from</span>
   <span class="sh-str">'https://esm.sh/visual-kerning@0.11.0'</span>
 
-<span class="sh-kw">const</span> editor = <span class="sh-fn">createKerningEditor</span>({ <span class="sh-attr">editable</span>: <span class="sh-kw">true</span> })
+<span class="sh-kw">const</span> editor = <span class="sh-fn">visualKerning</span>({ <span class="sh-attr">editable</span>: <span class="sh-kw">true</span> })
 editor.<span class="sh-fn">mount</span>()
 <span class="sh-tag">&lt;/script&gt;</span></code></pre>
           </div>
           <div class="for-engineers-usage-step">
             <p class="for-engineers-usage-label">本番環境で適用</p>
             <pre class="install-panel is-active"><code><span class="sh-tag">&lt;script</span> <span class="sh-attr">type</span>=<span class="sh-str">"module"</span><span class="sh-tag">&gt;</span>
-<span class="sh-kw">import</span> { <span class="sh-fn">createKerningEditor</span> } <span class="sh-kw">from</span>
+<span class="sh-kw">import</span> { <span class="sh-fn">visualKerning</span> } <span class="sh-kw">from</span>
   <span class="sh-str">'https://esm.sh/visual-kerning@0.11.0'</span>
 
-<span class="sh-kw">const</span> editor = <span class="sh-fn">createKerningEditor</span>({
+<span class="sh-kw">const</span> kerningData = <span class="sh-kw">await</span>
+  <span class="sh-fn">fetch</span>(<span class="sh-str">'/kerning-export.json'</span>)
+    .<span class="sh-fn">then</span>(r =&gt; r.<span class="sh-fn">json</span>())
+
+<span class="sh-kw">const</span> editor = <span class="sh-fn">visualKerning</span>({
   <span class="sh-attr">editable</span>: <span class="sh-kw">false</span>,
   <span class="sh-attr">kerning</span>: kerningData
 })
@@ -255,7 +259,7 @@ editor.<span class="sh-fn">mount</span>()
           </div>
         </div>
 
-        <p class="for-engineers-readme">詳しい使い方は <a href="https://github.com/ie3jp/visual-kerning/blob/main/README.ja.md" target="_blank" rel="noopener">README</a> をご覧ください。</p>
+        <p class="for-engineers-readme">イベント連携・アクセシビリティ対応・ショートカット一覧など、詳しくは <a href="https://github.com/ie3jp/visual-kerning/blob/main/README.ja.md" target="_blank" rel="noopener">README</a> へ。</p>
       </section>
 
     </main>

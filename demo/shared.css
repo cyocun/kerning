@@ -378,7 +378,12 @@ main {
   letter-spacing: 0.04em;
   color: var(--muted);
 }
+.for-engineers-usage-step {
+  display: flex;
+  flex-direction: column;
+}
 .for-engineers-usage-step .install-panel {
+  flex: 1;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #fff;
