@@ -100,6 +100,7 @@ interface KerningExport {
 - Arrow Left/Right: move cursor
 - Shift + Arrow Left/Right: extend selection
 - Arrow Up/Down: move vertically
+- Alt + Shift + Arrow Left/Right: adjust by +/-1
 - Alt + Arrow Left/Right: adjust by +/-10
 - Alt + Cmd/Ctrl + Arrow Left/Right: adjust by +/-100
 - Esc: clear selection

@@ -551,7 +551,7 @@ export function createVisualKerningPlugin(): VisualKerningPlugin {
       const area = areas.value.get(selector)
       if (!area) return
 
-      const step = (e.metaKey || e.ctrlKey) ? 100 : 10
+      const step = (e.metaKey || e.ctrlKey) ? 100 : e.shiftKey ? 1 : 10
       const delta = e.key === 'ArrowRight' ? step : -step
       const spans = getCharSpans(area.el)
 

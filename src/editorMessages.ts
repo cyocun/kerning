@@ -26,12 +26,12 @@ const baseMessages = {
 export const editorMessages = {
   en: {
     ...baseMessages.en,
-    helpText: '⌥ + ←/→ ±10  ⌥ + ⌘ + ←/→ ±100\n⌘ + K toggle  B compare',
+    helpText: '⌥⇧ + ←/→ ±1  ⌥ + ←/→ ±10  ⌥⌘ + ←/→ ±100\n⌘ + K toggle  B compare',
     warnSpanTarget: '<span> detected as target. Use a block element (<p>, <div>, <h1>) to avoid nested spans.',
   },
   ja: {
     ...baseMessages.ja,
-    helpText: '⌥ + ←/→ ±10  ⌥ + ⌘ + ←/→ ±100\n⌘ + K 切替  B 比較',
+    helpText: '⌥⇧ + ←/→ ±1  ⌥ + ←/→ ±10  ⌥⌘ + ←/→ ±100\n⌘ + K 切替  B 比較',
     warnSpanTarget: '対象が <span> です。ネストを避けるためブロック要素（<p>, <div>, <h1>）の使用を推奨します。',
   },
 } as const
