@@ -617,7 +617,7 @@ export function createTour(options: TourOptions): Tour {
     if (replayBtn) return
     ensureStyle()
     replayBtn = document.createElement('button')
-    replayBtn.className = 'nav-btn'
+    replayBtn.className = 'nav-btn tour-replay-btn'
     if (ignoreAttr) replayBtn.setAttribute(ignoreAttr, 'true')
     replayBtn.textContent = replayLabel
     replayBtn.addEventListener('click', () => {

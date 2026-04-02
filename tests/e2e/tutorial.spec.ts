@@ -62,21 +62,21 @@ test.describe('tutorial tour', () => {
   })
 
   test('tutorial runs through steps with captions', async ({ page }) => {
-    // Step 1: 中央キャプションが表示される
+    // Step 2: editor palette のキャプションが表示される
     const caption = page.locator('.tour-caption')
     await expect(caption).toContainText('editor palette', { timeout: 5000 })
-    await expect(caption).toContainText('Step 1 / 7')
+    await expect(caption).toContainText('Step 2 / 9')
 
-    // Step 1 完了後、エディタパネルが表示される
+    // Step 2 完了後、エディタパネルが表示される
     await expect(page.locator('.js-panel')).toBeVisible({ timeout: 10000 })
 
-    // Step 2 に進む: キャプションが変わる
-    await expect(caption).toContainText('Step 2 / 7', { timeout: 10000 })
+    // Step 3 に進む: キャプションが変わる
+    await expect(caption).toContainText('Step 3 / 9', { timeout: 10000 })
 
-    // 以降のステップが進むことを確認（Step 3 まで待つ）
-    await expect(caption).toContainText('Step 3 / 7', { timeout: 15000 })
+    // 以降のステップが進むことを確認（Step 4 まで待つ）
+    await expect(caption).toContainText('Step 4 / 9', { timeout: 15000 })
 
-    // Step 3 でキーキャップがキャプション内に表示される
+    // Step 4 でキーキャップがキャプション内に表示される
     const keycaps = page.locator('.tour-keycap')
     await expect(keycaps.first()).toBeVisible({ timeout: 5000 })
     // キー操作時にハイライトされる
