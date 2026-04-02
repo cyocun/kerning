@@ -78,8 +78,15 @@ to continue editing from a previous export.
 
 ```ts
 const editor = visualKerning({ editable: false, kerning: kerningData })
-editor.mount()
+await editor.mount()
 ```
+
+`mount()` returns a `Promise` that resolves once kerning is applied.
+Use `await` to defer rendering (e.g. removing `visibility: hidden`)
+until text is properly kerned.
+
+In editing mode, you can also drag & drop the exported JSON file
+onto the editor panel to re-import it.
 
 ## What it works well for
 
@@ -131,7 +138,7 @@ editor.mount()
 - `editable: true` (default) — editing UI + keyboard shortcuts
 - `editable: false` + `kerning` — production mode, applies kerning data only
 - `accessible: true` — adds screen reader support (see [Accessibility](#accessibility))
-- `mount()` / `unmount()` — attach / detach from the DOM
+- `mount()` / `unmount()` — attach / detach from the DOM. `mount()` returns a `Promise<void>` that resolves once kerning is applied
 
 `KerningExport` is the public data shape used by the `kerning` option.
 

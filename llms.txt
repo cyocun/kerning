@@ -70,9 +70,12 @@ off()
 ### Lifecycle
 
 ```ts
-editor.mount()    // attach to DOM (waits for DOMContentLoaded if needed)
-editor.unmount()  // detach from DOM, clean up all listeners
+await editor.mount()  // attach to DOM, resolves when kerning is applied
+editor.unmount()      // detach from DOM, clean up all listeners
 ```
+
+`mount()` returns a `Promise<void>`. Use `await` to defer actions
+(e.g. removing `visibility: hidden`) until kerning is fully applied.
 
 ## Kerning data format
 
@@ -136,5 +139,7 @@ Only applies in production mode (`editable: false`). DOM structure changes — a
 - Preserves inline markup (<em>, <strong>, <span>)
 - Kerning values are in 1/1000em (integer). 100 = 0.1em
 - kerning[i] = gap after character i. indent = gap before first character
+- mount() returns Promise<void>, resolves when kerning is applied
 - mount() automatically waits for DOM ready if called early
+- In editing mode, drag & drop a JSON file onto the editor panel to re-import
 - Target elements should be block-level (<p>, <div>, <h1>), not <span>

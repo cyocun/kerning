@@ -78,8 +78,15 @@ editor.mount()
 
 ```ts
 const editor = visualKerning({ editable: false, kerning: kerningData })
-editor.mount()
+await editor.mount()
 ```
+
+`mount()` はカーニング適用完了時に解決する `Promise` を返します。
+`await` することで、テキストのカーニングが完了してから表示する
+（例: `visibility: hidden` の解除）といった制御が可能です。
+
+編集モードでは、書き出したJSONファイルをエディタパネルに
+ドラッグ&ドロップして再インポートすることもできます。
 
 ## 向いている用途
 
@@ -131,7 +138,7 @@ editor.mount()
 - `editable: true`（デフォルト）— 編集UI + キーボードショートカット
 - `editable: false` + `kerning` — 本番モード。カーニングデータの適用のみ
 - `accessible: true` — スクリーンリーダー対応を有効化（[アクセシビリティ](#アクセシビリティ)参照）
-- `mount()` / `unmount()` — DOM への接続・切断
+- `mount()` / `unmount()` — DOM への接続・切断。`mount()` はカーニング適用完了時に解決する `Promise<void>` を返す
 
 `kerning` に渡す `KerningExport` が、公開されているデータ型です。
 
