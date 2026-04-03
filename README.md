@@ -3,7 +3,7 @@
 [English](./README.md) | [日本語](./README.ja.md)
 
 [![npm](https://img.shields.io/npm/v/visual-kerning.svg)](https://www.npmjs.com/package/visual-kerning)
-[![Live Demo](https://img.shields.io/badge/demo-live-0a66ff?style=flat-square)](https://ie3jp.github.io/visual-kerning/)
+[![Playground](https://img.shields.io/badge/playground-live-0a66ff?style=flat-square)](https://ie3jp.github.io/visual-kerning/)
 [![GitHub Pages](https://github.com/ie3jp/visual-kerning/actions/workflows/deploy-demo-pages.yml/badge.svg)](https://github.com/ie3jp/visual-kerning/actions/workflows/deploy-demo-pages.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f?style=flat-square)](./LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/cyocun)
@@ -15,9 +15,9 @@ and apply it to production DOM without tying yourself to a specific framework.
 
 ![Visual Kerning demo](.github/readme/ogp.gif)
 
-## Demo
+## Playground
 
-**Start here:** [Open the live demo](https://ie3jp.github.io/visual-kerning/)
+**Start here:** [Open the playground](https://ie3jp.github.io/visual-kerning/)
 
 - Local demo: `npm run demo`
 - Static build: `npm run demo:build`
