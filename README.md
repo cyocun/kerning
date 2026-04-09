@@ -2,10 +2,10 @@
 
 [English](./README.md) | [日本語](./README.ja.md)
 
-[![npm](https://img.shields.io/npm/v/visual-kerning.svg)](https://www.npmjs.com/package/visual-kerning)
-[![Playground](https://img.shields.io/badge/playground-live-0a66ff?style=flat-square)](https://ie3jp.github.io/visual-kerning/)
-[![GitHub Pages](https://github.com/ie3jp/visual-kerning/actions/workflows/deploy-demo-pages.yml/badge.svg)](https://github.com/ie3jp/visual-kerning/actions/workflows/deploy-demo-pages.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f?style=flat-square)](./LICENSE)
+[![npm](https://img.shields.io/npm/v/visual-kerning?style=flat-square&color=888)](https://www.npmjs.com/package/visual-kerning)
+[![Playground](https://img.shields.io/badge/playground-live-888?style=flat-square)](https://ie3jp.github.io/visual-kerning/)
+[![GitHub Pages](https://img.shields.io/github/actions/workflow/status/ie3jp/visual-kerning/deploy-demo-pages.yml?style=flat-square&label=GitHub+Pages&color=888)](https://github.com/ie3jp/visual-kerning/actions/workflows/deploy-demo-pages.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-888?style=flat-square)](./LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/cyocun)
 
 **Make web typography more intuitive.**
