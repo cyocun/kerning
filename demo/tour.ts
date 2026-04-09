@@ -38,6 +38,8 @@ export interface TourOptions {
   skipLabel?: string
   replayLabel?: string
   onBeforeReplay?: () => void
+  /** ツアー終了時（完走・スキップ・クリックキャンセル問わず）に呼ばれるコールバック */
+  onDone?: () => void
   /** ツアーUI要素に付与する属性名。外部ライブラリがツアー要素を無視するために使用 */
   ignoreAttr?: string
 }
@@ -599,7 +601,7 @@ async function executeAction(action: TourAction, ctx: RunContext): Promise<void>
 // ---------------------------------------------------------------------------
 
 export function createTour(options: TourOptions): Tour {
-  const { steps, doneKey, onBeforeReplay, ignoreAttr } = options
+  const { steps, doneKey, onBeforeReplay, onDone, ignoreAttr } = options
   const skipLabel = options.skipLabel ?? 'Skip tour'
   const replayLabel = options.replayLabel ?? 'Replay tour'
 
@@ -695,6 +697,7 @@ export function createTour(options: TourOptions): Tour {
       _active = false
       clearHighlight()
       localStorage.setItem(doneKey, '1')
+      onDone?.()
       spotlight.style.boxShadow = 'none'
       caption.style.opacity = '0'
       skipBtn.style.opacity = '0'
