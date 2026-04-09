@@ -91,6 +91,7 @@ const tour = createTour({
   doneKey: TUTORIAL_DONE_KEY,
   steps: buildTutorialSteps((handler) => editor.plugin.on('enable', handler), tutorialContent),
   onBeforeReplay: () => simulateCmdK(),
+  onDone: () => { editor.plugin.enabled.value = true },
   ignoreAttr: 'data-visual-kerning-ignore',
   skipLabel: m.skipLabel,
   replayLabel: m.replayLabel,
